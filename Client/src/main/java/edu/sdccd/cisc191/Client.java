@@ -203,12 +203,35 @@ public class Client extends Application{
         TextArea output = new TextArea(outputText);
         output.setWrapText(true);
         output.setPrefSize(300,200);
+
         Button back = new Button("Back");
         back.setOnAction(e -> window.setScene(scene));
+
+        Button file = new Button("Get File");
+        file.setOnAction(e -> {
+            try {
+                getOutputFile();
+                AlertBox.display("File Saved", "Your Output file has been saved under output.txt");
+            } catch (FileNotFoundException ex) {
+                AlertBox.display("Error", "Error!\n No File Found");
+            }
+        });
+
+        HBox view = new HBox(10);
+        view.setAlignment(Pos.CENTER);
+        view.getChildren().addAll(back, file);
+
         layout4.setPadding(new Insets(50,50,50,50));
         layout4.setAlignment(Pos.CENTER);
-        layout4.getChildren().addAll(answer, output, back);
+        layout4.getChildren().addAll(answer, output, view);
         Scene scene2 = new Scene(layout4, 800, 600);
         window.setScene(scene2);
+    }
+
+    public static void getOutputFile() throws FileNotFoundException {
+        String output = "output.txt";
+            PrintWriter pw = new PrintWriter(output);
+            pw.println(outputText);
+            pw.close();
     }
 } //end class Client
