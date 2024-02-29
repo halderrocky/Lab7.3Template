@@ -162,8 +162,6 @@ public class Client extends Application{
                 createSecondWindow();
                 break;
             case "Caesar Cipher":
-                outputText = Caesar.encode(inputText, key);
-                createSecondWindow();
                 try {
                     outputText = Caesar.encode(inputText, key);
                     createSecondWindow();
