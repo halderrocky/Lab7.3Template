@@ -1,5 +1,6 @@
 package edu.sdccd.cisc191;
 
+import edu.sdccd.cisc191.ciphers.Affine;
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.ciphers.Hill;
 import edu.sdccd.cisc191.ciphers.Vigenere;
@@ -78,7 +79,8 @@ public class Client extends Application{
         combobox.getItems().addAll(
                 "Hill Cipher",
                 "Caesar Cipher",
-                "Vigenere Cipher"
+                "Vigenere Cipher",
+                "Affine Cipher"
         );
         //listen for selection changes
         combobox.setOnAction(e -> System.out.println(combobox.getValue()));
@@ -110,9 +112,9 @@ public class Client extends Application{
         textArea.setWrapText(true);
 
         //Decode/encode button
-        Button button = new Button("Encode");
-        button.setOnAction(e -> Client.encode(textArea.getText(), input.getText(), combobox.getValue()));
-        Button encode = new Button("Decode");
+        Button encode = new Button("Encode");
+        encode.setOnAction(e -> Client.encode(textArea.getText(), input.getText(), combobox.getValue()));
+        Button decode = new Button("Decode");
         encode.setOnAction(e -> Client.decode(textArea.getText(), input.getText(), combobox.getValue()));
 
         //Import File Button
@@ -143,7 +145,7 @@ public class Client extends Application{
         layout2.setAlignment(Pos.CENTER);
         HBox layout3 = new HBox(10);
         layout3.setAlignment(Pos.CENTER);
-        layout3.getChildren().addAll(button, encode);
+        layout3.getChildren().addAll(encode, decode);
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
@@ -173,6 +175,10 @@ public class Client extends Application{
                 break;
             case "Vigenere Cipher":
                 outputText = Vigenere.encode(inputText, key);
+                createSecondWindow();
+                break;
+            case "Affine Cipher":
+                outputText = Affine.encode(inputText, key);
                 createSecondWindow();
                 break;
         }
