@@ -30,6 +30,7 @@ public class MD4 {
     public byte[] runDigest(String inputText) {
         textLength = inputText.length();
         int paddingLength = textLength%64;
+        byte[] message = inputText.getBytes();
         if(paddingLength < 56)
             paddingLength = 56-paddingLength;
         else
@@ -41,6 +42,20 @@ public class MD4 {
         for(int i=0; i<8; i++)
             padding[paddingLength + i] = (byte) ((textLength*8) >>> (8*i));
 
+        //Append padding to msg
+
         return
+    }
+
+    private int funcF (int x, int y, int z) {
+        return ((x&y) | ((~x)&z));
+    }
+
+    private int funcG (int x, int y, int z) {
+        return ((x&y) | (x&z) | (y&z));
+    }
+
+    private int funcH (int x, int y, int z) {
+        return (x ^ y ^ z);
     }
 }
