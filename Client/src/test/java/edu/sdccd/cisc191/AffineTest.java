@@ -1,6 +1,8 @@
-package edu.sdccd.cisc191.ciphers;
+package edu.sdccd.cisc191;
 
+import edu.sdccd.cisc191.ciphers.Affine;
 import edu.sdccd.cisc191.ciphers.Caesar;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +16,7 @@ class AffineTest {
     void encode() {
         plainText = "abcdefghijklmnopqrstuvwxyz";
         key = "3,2";
-        assertEquals("cfiloruxadgjmpsvybehknqtwz", Affine.encode(plainText,key).toLowerCase());
+        Assertions.assertEquals("cfiloruxadgjmpsvybehknqtwz", Affine.encode(plainText,key).toLowerCase());
     }
 
     @Test
