@@ -97,6 +97,8 @@ public class Client extends Application{
                     break;
                 case "Vigenere Cipher":
                     AlertBox.display("Vigenere Cipher", "The key must be a word or series of letters");
+                case "Affine Cipher":
+                    AlertBox.display("Affine Cipher","They key must be formatted as #,#");
             }
         }
     );
@@ -115,7 +117,7 @@ public class Client extends Application{
         Button encode = new Button("Encode");
         encode.setOnAction(e -> Client.encode(textArea.getText(), input.getText(), combobox.getValue()));
         Button decode = new Button("Decode");
-        encode.setOnAction(e -> Client.decode(textArea.getText(), input.getText(), combobox.getValue()));
+        decode.setOnAction(e -> Client.decode(textArea.getText(), input.getText(), combobox.getValue()));
 
         //Import File Button
         Button files = new Button("Select File");
@@ -178,9 +180,14 @@ public class Client extends Application{
                 createSecondWindow();
                 break;
             case "Affine Cipher":
-                outputText = Affine.encode(inputText, key);
-                createSecondWindow();
-                break;
+                try{
+                    outputText = Affine.encode(inputText, key);
+                    createSecondWindow();
+                    break;
+                } catch (Exception e) {
+                    AlertBox.display("Error", "ERROR!\nWrong input format (must be #,#)");
+                }
+
         }
     }
 
@@ -203,9 +210,13 @@ public class Client extends Application{
                 createSecondWindow();
                 break;
             case "Affine Cipher":
-                outputText = Affine.decode(inputText, key);
-                createSecondWindow();
-                break;
+                try{
+                    outputText = Affine.decode(inputText, key);
+                    createSecondWindow();
+                    break;
+                } catch (Exception e) {
+                    AlertBox.display("Error", "ERROR!\nWrong input format (must be #,#)");
+                }
         }
     }
 

@@ -31,6 +31,9 @@ public class Affine {
             char c = inputText.charAt(i);
             int charNum = c - 'a';
             int t = (inverseKey(m, 26) * (charNum - b)) % 26;
+            if(t<0){
+                t += 26;
+            }
             char encodedChar = (char) (t + 'a');
             outputText.append(encodedChar);
         }
