@@ -2,8 +2,12 @@ package edu.sdccd.cisc191;
 
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.hashes.MD4;
+import edu.sdccd.cisc191.hashes.MD4Engine;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -36,5 +40,25 @@ public class MD4Test {
                 "\n" +
                 "Be sure to stay active in Canvas. If you are unable, please let me know ahead of time, or drop the course. I am required by the school to drop students who are inactive. There is a waiting list of students happy to take your spot.";
         assertEquals("c185837692aad6c2ae9a6a51dcfa2dc2", md4.hashAsString(inputText));
+    }
+
+    @Test
+    public void testMD4Break() {
+        //TODO: Get this as user input
+        HashMap<Character, char[]> formatMap = new HashMap<>();
+        formatMap.put('a', new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'});
+        formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
+        formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
+
+        //String[] plainText = new String[]{"dec355vus"};
+        //String[] inputHash = new String[]{"e03898acda5b6609f2c2761cb5efba2f"};
+
+        String[] plainText = new String[]{"abcdef"};
+        String[] inputHash = new String[]{"804e7f1c2586e50b49ac65db5b645131"};
+
+        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaaa");
+        md4Engine.runMD4Crack();
+
+        assertEquals(plainText[0], md4Engine.getPlainText()[0]);
     }
 }
