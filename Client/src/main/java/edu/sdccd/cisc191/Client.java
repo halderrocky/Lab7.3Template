@@ -202,6 +202,10 @@ public class Client extends Application{
                 outputText = Vigenere.decode(inputText, key);
                 createSecondWindow();
                 break;
+            case "Affine Cipher":
+                outputText = Affine.decode(inputText, key);
+                createSecondWindow();
+                break;
         }
     }
 
