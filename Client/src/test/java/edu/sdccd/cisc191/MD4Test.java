@@ -56,9 +56,9 @@ public class MD4Test {
         String[] plainText = new String[]{"abcdef"};
         String[] inputHash = new String[]{"804e7f1c2586e50b49ac65db5b645131"};
 
-        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaaa");
+        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaaa", 6);
         md4Engine.runMD4Crack();
 
-        assertEquals(plainText[0], md4Engine.getPlainText()[0]);
+        assertEquals(plainText[0], md4Engine.getCrackedPasswords().get(inputHash[0]));
     }
 }
