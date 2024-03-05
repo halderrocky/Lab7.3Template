@@ -1,5 +1,6 @@
 package edu.sdccd.cisc191;
 
+import edu.sdccd.cisc191.ciphers.Atbash;
 import edu.sdccd.cisc191.ciphers.Affine;
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.ciphers.Hill;
@@ -83,6 +84,7 @@ public class Client extends Application{
                 "Hill Cipher",
                 "Caesar Cipher",
                 "Vigenere Cipher",
+                "Atbash Cipher",
                 "Affine Cipher",
                 "MD4 Hash"
         );
@@ -101,8 +103,13 @@ public class Client extends Application{
                     break;
                 case "Vigenere Cipher":
                     AlertBox.display("Vigenere Cipher", "The key must be a word or series of letters");
+                    break;
+                case "Atbash Cipher":
+                    AlertBox.display("Atbash Cipher", "There is no key :D");
+                    break;
                 case "Affine Cipher":
                     AlertBox.display("Affine Cipher","They key must be formatted as #,#");
+                    break;
             }
         }
     );
@@ -181,6 +188,10 @@ public class Client extends Application{
                 outputText = Vigenere.encode(inputText, key);
                 createSecondWindow();
                 break;
+            case "Atbash Cipher":
+                outputText = Atbash.encrypt(inputText);
+                createSecondWindow();
+                break;
             case "Affine Cipher":
                 try{
                     outputText = Affine.encode(inputText, key);
@@ -224,6 +235,10 @@ public class Client extends Application{
                 break;
             case "Vigenere Cipher":
                 outputText = Vigenere.decode(inputText, key);
+                createSecondWindow();
+                break;
+            case "Atbash Cipher":
+                outputText = Atbash.decrypt(inputText);
                 createSecondWindow();
                 break;
             case "Affine Cipher":
