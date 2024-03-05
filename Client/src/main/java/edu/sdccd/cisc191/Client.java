@@ -16,6 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import javax.swing.*;
 import java.net.*;
 import java.io.*;
 import java.util.HashMap;
@@ -286,7 +288,7 @@ public class Client extends Application{
         file.setOnAction(e -> {
             try {
                 getOutputFile();
-                AlertBox.display("File Saved", "Your Output file has been saved under output.txt");
+                AlertBox.display("File Saved", "Your output file has been saved");
             } catch (FileNotFoundException ex) {
                 AlertBox.display("Error", "Error!\n No File Found");
             }
@@ -304,9 +306,19 @@ public class Client extends Application{
     }
 
     public static void getOutputFile() throws FileNotFoundException {
-        String output = "output.txt";
-            PrintWriter pw = new PrintWriter(output);
+        FileChooser fileChooser = new FileChooser();
+
+        //Set extension filter for text files
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //Show save file dialog
+        File file = fileChooser.showSaveDialog(window);
+
+        if (file != null) {
+            PrintWriter pw = new PrintWriter(file);
             pw.println(outputText);
             pw.close();
-    }
+        }
+    };
 } //end class Client
