@@ -1,5 +1,6 @@
 package edu.sdccd.cisc191;
 
+import edu.sdccd.cisc191.ciphers.Atbash;
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.ciphers.Hill;
 import edu.sdccd.cisc191.ciphers.Vigenere;
@@ -78,7 +79,8 @@ public class Client extends Application{
         combobox.getItems().addAll(
                 "Hill Cipher",
                 "Caesar Cipher",
-                "Vigenere Cipher"
+                "Vigenere Cipher",
+                "Atbash Cipher"
         );
         //listen for selection changes
         combobox.setOnAction(e -> System.out.println(combobox.getValue()));
@@ -95,6 +97,10 @@ public class Client extends Application{
                     break;
                 case "Vigenere Cipher":
                     AlertBox.display("Vigenere Cipher", "The key must be a word or series of letters");
+                    break;
+                case "Atbash Cipher":
+                    AlertBox.display("Atbash Cipher", "There is no key :D");
+                    break;
             }
         }
     );
@@ -175,6 +181,10 @@ public class Client extends Application{
                 outputText = Vigenere.encode(inputText, key);
                 createSecondWindow();
                 break;
+            case "Atbash Cipher":
+                outputText = Atbash.encrypt(inputText);
+                createSecondWindow();
+                break;
         }
     }
 
@@ -194,6 +204,10 @@ public class Client extends Application{
                 break;
             case "Vigenere Cipher":
                 outputText = Vigenere.decode(inputText, key);
+                createSecondWindow();
+                break;
+            case "Atbash Cipher":
+                outputText = Atbash.decrypt(inputText);
                 createSecondWindow();
                 break;
         }
