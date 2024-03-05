@@ -185,7 +185,7 @@ public class Client extends Application{
                     createSecondWindow();
                     break;
                 } catch (Exception e) {
-                    AlertBox.display("Error", "ERROR!\nWrong input format (must be #,#)");
+                    AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
                 }
 
         }
@@ -214,8 +214,8 @@ public class Client extends Application{
                     outputText = Affine.decode(inputText, key);
                     createSecondWindow();
                     break;
-                } catch (Exception e) {
-                    AlertBox.display("Error", "ERROR!\nWrong input format (must be #,#)");
+                } catch(Exception e){
+                    AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
                 }
         }
     }

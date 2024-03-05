@@ -1,5 +1,7 @@
 package edu.sdccd.cisc191.ciphers;
 
+import edu.sdccd.cisc191.AlertBox;
+
 import java.util.StringTokenizer;
 
 public class Affine {
@@ -8,7 +10,9 @@ public class Affine {
         StringTokenizer newKey = new StringTokenizer(key, ",");
         int m = Integer.parseInt(newKey.nextToken());
         int b = Integer.parseInt(newKey.nextToken());
-
+        if (m % 2 == 0 || m % 13 == 0) {
+            throw new IllegalArgumentException("The first number must not be even or a multiple of 13");
+        }
         //iterates through each character and shifts according to the key
         StringBuilder outputText = new StringBuilder();
         for (int i = 0; i < inputText.length(); i++) {
@@ -25,7 +29,9 @@ public class Affine {
         StringTokenizer newKey = new StringTokenizer(key, ",");
         int m = Integer.parseInt(newKey.nextToken());
         int b = Integer.parseInt(newKey.nextToken());
-
+        if (m % 2 == 0 || m % 13 == 0) {
+            throw new IllegalArgumentException("The first number must not be even or a multiple of 13");
+        }
         StringBuilder outputText = new StringBuilder();
         for (int i = 0; i < inputText.length(); i++) {
             char c = inputText.charAt(i);
