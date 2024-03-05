@@ -1,9 +1,12 @@
 package edu.sdccd.cisc191;
 
 import edu.sdccd.cisc191.ciphers.Atbash;
+import edu.sdccd.cisc191.ciphers.Affine;
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.ciphers.Hill;
 import edu.sdccd.cisc191.ciphers.Vigenere;
+import edu.sdccd.cisc191.hashes.MD4;
+import edu.sdccd.cisc191.hashes.MD4Engine;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,6 +18,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.net.*;
 import java.io.*;
+import java.util.HashMap;
 import java.util.Scanner;
 
 
@@ -80,7 +84,9 @@ public class Client extends Application{
                 "Hill Cipher",
                 "Caesar Cipher",
                 "Vigenere Cipher",
-                "Atbash Cipher"
+                "Atbash Cipher",
+                "Affine Cipher",
+                "MD4 Hash"
         );
         //listen for selection changes
         combobox.setOnAction(e -> System.out.println(combobox.getValue()));
@@ -101,6 +107,9 @@ public class Client extends Application{
                 case "Atbash Cipher":
                     AlertBox.display("Atbash Cipher", "There is no key :D");
                     break;
+                case "Affine Cipher":
+                    AlertBox.display("Affine Cipher","They key must be formatted as #,#");
+                    break;
             }
         }
     );
@@ -116,10 +125,10 @@ public class Client extends Application{
         textArea.setWrapText(true);
 
         //Decode/encode button
-        Button button = new Button("Encode");
-        button.setOnAction(e -> Client.encode(textArea.getText(), input.getText(), combobox.getValue()));
-        Button encode = new Button("Decode");
-        encode.setOnAction(e -> Client.decode(textArea.getText(), input.getText(), combobox.getValue()));
+        Button encode = new Button("Encode");
+        encode.setOnAction(e -> Client.encode(textArea.getText(), input.getText(), combobox.getValue()));
+        Button decode = new Button("Decode");
+        decode.setOnAction(e -> Client.decode(textArea.getText(), input.getText(), combobox.getValue()));
 
         //Import File Button
         Button files = new Button("Select File");
@@ -149,7 +158,7 @@ public class Client extends Application{
         layout2.setAlignment(Pos.CENTER);
         HBox layout3 = new HBox(10);
         layout3.setAlignment(Pos.CENTER);
-        layout3.getChildren().addAll(button, encode);
+        layout3.getChildren().addAll(encode, decode);
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
@@ -168,8 +177,6 @@ public class Client extends Application{
                 createSecondWindow();
                 break;
             case "Caesar Cipher":
-                outputText = Caesar.encode(inputText, key);
-                createSecondWindow();
                 try {
                     outputText = Caesar.encode(inputText, key);
                     createSecondWindow();
@@ -183,6 +190,30 @@ public class Client extends Application{
                 break;
             case "Atbash Cipher":
                 outputText = Atbash.encrypt(inputText);
+                createSecondWindow();
+                break;
+            case "Affine Cipher":
+                try{
+                    outputText = Affine.encode(inputText, key);
+                    createSecondWindow();
+                    break;
+                } catch (Exception e) {
+                    AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
+                }
+                break;
+            case "MD4 Hash":
+                MD4 md4 = new MD4();
+                if(key.toUpperCase().equals("LIST")) {
+                    String[] list = inputText.split("\n");
+                    StringBuilder output = new StringBuilder();
+                    for(String str : list) {
+                        output.append(md4.hashAsString(str) + "\n");
+                    }
+
+                    outputText = output.toString();
+                } else {
+                    outputText = md4.hashAsString(inputText);
+                }
                 createSecondWindow();
                 break;
         }
@@ -210,6 +241,34 @@ public class Client extends Application{
                 outputText = Atbash.decrypt(inputText);
                 createSecondWindow();
                 break;
+            case "Affine Cipher":
+                try{
+                    outputText = Affine.decode(inputText, key);
+                    createSecondWindow();
+                    break;
+                } catch(Exception e){
+                    AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
+                }
+                break;
+            case "MD4 Hash":
+                String[] list = inputText.split("\n");
+                int numThreads = 8; //TODO Get Number of Threads
+                HashMap<Character, char[]> formatMap = new HashMap<>(); //TODO: Get this as user input
+                formatMap.put('a', new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'});
+                formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
+                formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
+
+                MD4Engine md4Engine = new MD4Engine(list, formatMap, key, numThreads);
+                md4Engine.runMD4Crack();
+
+                HashMap<String, String> crackedPasswords = md4Engine.getCrackedPasswords();
+                StringBuilder output = new StringBuilder();
+                for(String str : list) {
+                    output.append(str).append(" --> ").append(crackedPasswords.get(str)).append("\n");
+                }
+                outputText = output.toString();
+                createSecondWindow();
+                break;
         }
     }
 
@@ -219,12 +278,35 @@ public class Client extends Application{
         TextArea output = new TextArea(outputText);
         output.setWrapText(true);
         output.setPrefSize(300,200);
+
         Button back = new Button("Back");
         back.setOnAction(e -> window.setScene(scene));
+
+        Button file = new Button("Get File");
+        file.setOnAction(e -> {
+            try {
+                getOutputFile();
+                AlertBox.display("File Saved", "Your Output file has been saved under output.txt");
+            } catch (FileNotFoundException ex) {
+                AlertBox.display("Error", "Error!\n No File Found");
+            }
+        });
+
+        HBox view = new HBox(10);
+        view.setAlignment(Pos.CENTER);
+        view.getChildren().addAll(back, file);
+
         layout4.setPadding(new Insets(50,50,50,50));
         layout4.setAlignment(Pos.CENTER);
-        layout4.getChildren().addAll(answer, output, back);
+        layout4.getChildren().addAll(answer, output, view);
         Scene scene2 = new Scene(layout4, 800, 600);
         window.setScene(scene2);
+    }
+
+    public static void getOutputFile() throws FileNotFoundException {
+        String output = "output.txt";
+            PrintWriter pw = new PrintWriter(output);
+            pw.println(outputText);
+            pw.close();
     }
 } //end class Client

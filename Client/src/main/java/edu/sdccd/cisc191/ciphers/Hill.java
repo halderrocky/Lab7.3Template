@@ -1,12 +1,14 @@
 package edu.sdccd.cisc191.ciphers;
 
 import edu.sdccd.cisc191.AlertBox;
+import edu.sdccd.cisc191.CipherTools;
 
 import java.util.Arrays;
 
-public class Hill {
+public class Hill extends CipherTools {
     private static final int[] MULT_INVERSE= {1,0,9,0,21,0,15,0,3,0,19,0,0,0,7,0,23,0,11,0,5,0,17,0,25};
     private static String INPUT_TEXT,ALPHA_INPUT_TEXT;
+    private static final int DEPTH_OF_SEARCH = 1000;
 
     /**************************************************************************
      * Encrypts plain text using a Hill Cipher given a key word
@@ -51,12 +53,97 @@ public class Hill {
      * Decodes cipher text using a Hill Cipher given the encryption key
      *************************************************************************/
     public static String decode(String inputText, String key){
+        if(key.isEmpty())
+            return cryptanlysis(inputText, 2);
+
         //Removes all spaces and non-alphabetic characters
         INPUT_TEXT = inputText;
         ALPHA_INPUT_TEXT = INPUT_TEXT.toUpperCase().replaceAll("[^A-Z]", "");
 
         //Creates decryption matrix by inverting the key matrix
         return transformText(findInverse(createKeyMatrix(key.toUpperCase().replaceAll("[^A-Z]", ""))));
+    }
+
+    /**************************************************************************
+     * Cryptanalysis of cipher (decryption without key)
+     *************************************************************************/
+    public static String cryptanlysis(String inputText, int n) {
+        String alphaInputText = inputText.toUpperCase().replaceAll("[^A-Z]", "");
+        if (alphaInputText.length()>DEPTH_OF_SEARCH)
+            ALPHA_INPUT_TEXT = alphaInputText.substring(0,DEPTH_OF_SEARCH);
+        else
+            ALPHA_INPUT_TEXT = alphaInputText;
+
+        int[][] keyMatrix = new int[n][n];
+
+/*        if(n==2)
+            keyMatrix = bruteForce2x2();*/
+
+        keyMatrix = bruteForceNxN(n);
+
+        INPUT_TEXT = inputText;
+        ALPHA_INPUT_TEXT = alphaInputText;
+        return transformText(keyMatrix);
+    }
+
+    private static int[][] bruteForce2x2() {
+        int[][] matrix;
+        int[][] chiMatrix = new int[2][2];
+        double chiLow = Double.MAX_VALUE;
+
+        for(int a=0; a<26; a++){
+            for(int b=0; b<26; b++) {
+                for(int c=0; c<26; c++) {
+                    for(int d=0; d<26; d++) {
+                        int det = (a*d-b*c)%26;
+                        if(det%2 != 0 || det%13 != 0) {
+                            INPUT_TEXT = ALPHA_INPUT_TEXT;
+                            matrix = new int[][] {{a,b}, {c,d}};
+                            double chiSquared = chiSquareTest(INPUT_TEXT.length(), getLetterFrequency(transformText(matrix)));
+                            if(chiSquared < chiLow) {
+                                chiLow = chiSquared;
+                                chiMatrix = matrix;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return chiMatrix;
+    }
+
+    private static int[][] bruteForceNxN(int n) {
+        int[][] matrix = new int[n][n];
+        char[] cipherArr = ALPHA_INPUT_TEXT.toCharArray();
+
+        for(int iteration=0; iteration<n; iteration++) {
+            int[] row = new int[n];
+            double chiLow = Double.MAX_VALUE;
+            int[] lowest = new int[n];
+            for(int i=0; i<Math.pow(26,n); ++i) {
+                StringBuilder dividedText = new StringBuilder();
+                row[n-1] = i%26;
+                for(int j=n-2; j>=0; j--)
+                    row[j] = i/(int) Math.pow(26, j+1);
+
+                for(int c=0; c<ALPHA_INPUT_TEXT.length()-n; c+=n){
+                    int sum=0;
+                    for(int j=0; j<n; j++)
+                        sum+=(cipherArr[c+j]-'A')*row[j];
+                    dividedText.append((char) (sum%26 + 'A'));
+                }
+
+                double chiSquared = chiSquareTest(ALPHA_INPUT_TEXT.length(), getLetterFrequency(dividedText.toString()));
+                if(chiSquared < chiLow) {
+                    for(int k=0; k<n; k++)
+                        lowest[k] = row[k];
+                    chiLow = chiSquared;
+                }
+            }
+        }
+
+        return matrix;
     }
 
     /**************************************************************************
