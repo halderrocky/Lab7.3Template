@@ -1,5 +1,6 @@
 package edu.sdccd.cisc191;
 
+import edu.sdccd.cisc191.ciphers.Affine;
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.ciphers.Hill;
 import edu.sdccd.cisc191.ciphers.Vigenere;
@@ -82,6 +83,7 @@ public class Client extends Application{
                 "Hill Cipher",
                 "Caesar Cipher",
                 "Vigenere Cipher",
+                "Affine Cipher",
                 "MD4 Hash"
         );
         //listen for selection changes
@@ -99,6 +101,8 @@ public class Client extends Application{
                     break;
                 case "Vigenere Cipher":
                     AlertBox.display("Vigenere Cipher", "The key must be a word or series of letters");
+                case "Affine Cipher":
+                    AlertBox.display("Affine Cipher","They key must be formatted as #,#");
             }
         }
     );
@@ -114,10 +118,10 @@ public class Client extends Application{
         textArea.setWrapText(true);
 
         //Decode/encode button
-        Button button = new Button("Encode");
-        button.setOnAction(e -> Client.encode(textArea.getText(), input.getText(), combobox.getValue()));
-        Button encode = new Button("Decode");
-        encode.setOnAction(e -> Client.decode(textArea.getText(), input.getText(), combobox.getValue()));
+        Button encode = new Button("Encode");
+        encode.setOnAction(e -> Client.encode(textArea.getText(), input.getText(), combobox.getValue()));
+        Button decode = new Button("Decode");
+        decode.setOnAction(e -> Client.decode(textArea.getText(), input.getText(), combobox.getValue()));
 
         //Import File Button
         Button files = new Button("Select File");
@@ -147,7 +151,7 @@ public class Client extends Application{
         layout2.setAlignment(Pos.CENTER);
         HBox layout3 = new HBox(10);
         layout3.setAlignment(Pos.CENTER);
-        layout3.getChildren().addAll(button, encode);
+        layout3.getChildren().addAll(encode, decode);
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
@@ -178,6 +182,15 @@ public class Client extends Application{
             case "Vigenere Cipher":
                 outputText = Vigenere.encode(inputText, key);
                 createSecondWindow();
+                break;
+            case "Affine Cipher":
+                try{
+                    outputText = Affine.encode(inputText, key);
+                    createSecondWindow();
+                    break;
+                } catch (Exception e) {
+                    AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
+                }
                 break;
             case "MD4 Hash":
                 MD4 md4 = new MD4();
@@ -215,6 +228,15 @@ public class Client extends Application{
                 outputText = Vigenere.decode(inputText, key);
                 createSecondWindow();
                 break;
+            case "Affine Cipher":
+                try{
+                    outputText = Affine.decode(inputText, key);
+                    createSecondWindow();
+                    break;
+                } catch(Exception e){
+                    AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
+                }
+                break;
             case "MD4 Hash":
                 String[] list = inputText.split("\n");
                 int numThreads = 8; //TODO Get Number of Threads
@@ -233,6 +255,7 @@ public class Client extends Application{
                 }
                 outputText = output.toString();
                 createSecondWindow();
+                break;
         }
     }
 
