@@ -4,6 +4,8 @@ import edu.sdccd.cisc191.ciphers.Affine;
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.ciphers.Hill;
 import edu.sdccd.cisc191.ciphers.Vigenere;
+import edu.sdccd.cisc191.hashes.MD4;
+import edu.sdccd.cisc191.hashes.MD4Engine;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,6 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.net.*;
 import java.io.*;
+import java.util.HashMap;
 import java.util.Scanner;
 
 
@@ -80,7 +83,8 @@ public class Client extends Application{
                 "Hill Cipher",
                 "Caesar Cipher",
                 "Vigenere Cipher",
-                "Affine Cipher"
+                "Affine Cipher",
+                "MD4 Hash"
         );
         //listen for selection changes
         combobox.setOnAction(e -> System.out.println(combobox.getValue()));
@@ -187,7 +191,22 @@ public class Client extends Application{
                 } catch (Exception e) {
                     AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
                 }
+                break;
+            case "MD4 Hash":
+                MD4 md4 = new MD4();
+                if(key.toUpperCase().equals("LIST")) {
+                    String[] list = inputText.split("\n");
+                    StringBuilder output = new StringBuilder();
+                    for(String str : list) {
+                        output.append(md4.hashAsString(str) + "\n");
+                    }
 
+                    outputText = output.toString();
+                } else {
+                    outputText = md4.hashAsString(inputText);
+                }
+                createSecondWindow();
+                break;
         }
     }
 
@@ -217,6 +236,26 @@ public class Client extends Application{
                 } catch(Exception e){
                     AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
                 }
+                break;
+            case "MD4 Hash":
+                String[] list = inputText.split("\n");
+                int numThreads = 8; //TODO Get Number of Threads
+                HashMap<Character, char[]> formatMap = new HashMap<>(); //TODO: Get this as user input
+                formatMap.put('a', new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'});
+                formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
+                formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
+
+                MD4Engine md4Engine = new MD4Engine(list, formatMap, key, numThreads);
+                md4Engine.runMD4Crack();
+
+                HashMap<String, String> crackedPasswords = md4Engine.getCrackedPasswords();
+                StringBuilder output = new StringBuilder();
+                for(String str : list) {
+                    output.append(str).append(" --> ").append(crackedPasswords.get(str)).append("\n");
+                }
+                outputText = output.toString();
+                createSecondWindow();
+                break;
         }
     }
 

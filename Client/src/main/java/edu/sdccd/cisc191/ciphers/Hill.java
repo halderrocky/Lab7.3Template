@@ -3,7 +3,6 @@ package edu.sdccd.cisc191.ciphers;
 import edu.sdccd.cisc191.AlertBox;
 import edu.sdccd.cisc191.CipherTools;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public class Hill extends CipherTools {
@@ -116,18 +115,31 @@ public class Hill extends CipherTools {
 
     private static int[][] bruteForceNxN(int n) {
         int[][] matrix = new int[n][n];
+        char[] cipherArr = ALPHA_INPUT_TEXT.toCharArray();
 
-        for(int[] row : matrix) {
-            int iterator=0;
-            while(row[0] > 25) {
-                row[n] = iterator%26;
-                for(int i=row.length-1; i>0; i--) {
-                    row[i] = iterator/(int) Math.pow(26, i);
+        for(int iteration=0; iteration<n; iteration++) {
+            int[] row = new int[n];
+            double chiLow = Double.MAX_VALUE;
+            int[] lowest = new int[n];
+            for(int i=0; i<Math.pow(26,n); ++i) {
+                StringBuilder dividedText = new StringBuilder();
+                row[n-1] = i%26;
+                for(int j=n-2; j>=0; j--)
+                    row[j] = i/(int) Math.pow(26, j+1);
+
+                for(int c=0; c<ALPHA_INPUT_TEXT.length()-n; c+=n){
+                    int sum=0;
+                    for(int j=0; j<n; j++)
+                        sum+=(cipherArr[c+j]-'A')*row[j];
+                    dividedText.append((char) (sum%26 + 'A'));
                 }
 
-                //Transform vector w row
-
-                iterator ++;
+                double chiSquared = chiSquareTest(ALPHA_INPUT_TEXT.length(), getLetterFrequency(dividedText.toString()));
+                if(chiSquared < chiLow) {
+                    for(int k=0; k<n; k++)
+                        lowest[k] = row[k];
+                    chiLow = chiSquared;
+                }
             }
         }
 
