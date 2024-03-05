@@ -18,7 +18,6 @@ public class MD4Engine {
         NUM_THREADS = numThreads;
         hashBytes = new byte[inputHashes.length][];
         hexToBytes(inputHashes);
-
         format = new char[inFormat.length()][];
         setFormat(inFormatMap, inFormat);
     }
@@ -54,14 +53,15 @@ public class MD4Engine {
             int len = hashList[0].length();
             hashBytes[i] = new byte[len / 2];
             for (int j = 0; j < len; j += 2) {
-                hashBytes[i][j/2] = (byte) ((Character.digit(hashList[0].charAt(j), 16) << 4)
+                hashBytes[i][j/2] = (byte) ((Character.digit(hashList[i].charAt(j), 16) << 4)
                         + Character.digit(hashList[i].charAt(j+1), 16));
             }
         }
     }
 
-    public ConcurrentHashMap<String, String> getCrackedPasswords() {
-        return crackedPasswords;
+    public HashMap<String, String> getCrackedPasswords() {
+        HashMap<String, String> ret = new HashMap<>(crackedPasswords);
+        return ret;
     }
 
     class MD4Worker implements Runnable {
@@ -93,8 +93,9 @@ public class MD4Engine {
         }
 
         private void checkHash(String plainText) {
+            byte[] hash = md4.runDigest(plainText);
             for(byte[] hashByte : hashBytes) {
-                if (Arrays.equals(hashByte, md4.runDigest(plainText))){
+                if (Arrays.equals(hashByte, hash)){
                     //TODO Improve performance
                     StringBuilder hexString = new StringBuilder(hashByte.length*2);
                     for(byte b: hashByte)

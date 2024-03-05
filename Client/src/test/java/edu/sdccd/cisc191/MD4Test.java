@@ -53,12 +53,13 @@ public class MD4Test {
         //String[] plainText = new String[]{"dec355vus"};
         //String[] inputHash = new String[]{"e03898acda5b6609f2c2761cb5efba2f"};
 
-        String[] plainText = new String[]{"abcdef"};
-        String[] inputHash = new String[]{"804e7f1c2586e50b49ac65db5b645131"};
+        String[] plainText = new String[]{"aaaaa", "bbbbb", "ccccc"};
+        String[] inputHash = new String[]{"54485d61c2bf8519c3997d2c17d41b43", "c585831d1c895c2cd63a8f630639dbfd", "59bd84b4d9f409810b9d08d41b8676a2"};
 
-        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaaa", 6);
+        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaa", 6);
         md4Engine.runMD4Crack();
 
-        assertEquals(plainText[0], md4Engine.getCrackedPasswords().get(inputHash[0]));
+        for(int i=0; i<inputHash.length; i++)
+            assertEquals(plainText[i], md4Engine.getCrackedPasswords().get(inputHash[i]));
     }
 }
