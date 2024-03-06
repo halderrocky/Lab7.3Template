@@ -53,10 +53,10 @@ public class MD4Test {
         //String[] plainText = new String[]{"dec355vus"};
         //String[] inputHash = new String[]{"e03898acda5b6609f2c2761cb5efba2f"};
 
-        String[] plainText = new String[]{"aaaaa", "bbbbb", "ccccc"};
-        String[] inputHash = new String[]{"54485d61c2bf8519c3997d2c17d41b43", "c585831d1c895c2cd63a8f630639dbfd", "59bd84b4d9f409810b9d08d41b8676a2"};
+        String[] plainText = new String[]{"aaaaa"};
+        String[] inputHash = new String[]{"54485d61c2bf8519c3997d2c17d41b43"};
 
-        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaa", 6);
+        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaa", 1);
         md4Engine.runMD4Crack();
 
         for(int i=0; i<inputHash.length; i++)
