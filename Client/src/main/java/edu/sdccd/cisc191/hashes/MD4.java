@@ -1,6 +1,6 @@
-import java.util.Arrays;
+package edu.sdccd.cisc191.hashes;
 
-public class MD4 {
+public class MD4{
     private static final int[] ROUND2 = {0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15};
     private static final int[] ROUND3 = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
 
@@ -35,7 +35,7 @@ public class MD4 {
             int c = buffer[2];
             int d = buffer[3];
 
-            /*for(int i=0; i<16; i+=4) {
+            for(int i=0; i<16; i+=4) {
                 a = rot(a + f(b,c,d) + x[i], 3);
                 d = rot(d + f(a,b,c) + x[i+1], 7);
                 c = rot(c + f(d,a,b) + x[i+2], 11);
@@ -54,7 +54,7 @@ public class MD4 {
                 d = rot((d + h(a,b,c) + x[ROUND3[i+1]] + 0x6ED9EBA1), 9);
                 c = rot((c + h(d,a,b) + x[ROUND3[i+2]] + 0x6ED9EBA1), 11);
                 b = rot((b + h(c,d,a) + x[ROUND3[i+3]] + 0x6ED9EBA1), 15);
-            }*/
+            }
 
 
             buffer[0] += a;
@@ -70,11 +70,10 @@ public class MD4 {
                 ret[4*i + j] = (byte) (buffer[i] >>> (8*j));
             }
         }
-
         return ret;
     }
 
-    /*private static int f (int x, int y, int z) {
+    private static int f (int x, int y, int z) {
         return ((x&y) | ((~x)&z));
     }
 
@@ -88,5 +87,5 @@ public class MD4 {
 
     private static int rot (int t, int s) {
         return t << s | t >>> (32-s);
-    }*/
+    }
 }

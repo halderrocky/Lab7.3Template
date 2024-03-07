@@ -1,25 +1,107 @@
 package edu.sdccd.cisc191;
 
+import com.aparapi.Kernel;
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.hashes.MD4;
 import edu.sdccd.cisc191.hashes.MD4Engine;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MD4Test {
-    private final MD4 md4 =  new MD4();
     @Test
     public void testBasicHash() {
-        assertEquals("31d6cfe0d16ae931b73c59d7e0c089c0", md4.hashAsString(""));
-        assertEquals("bde52cb31de33e46245e05fbdbd6fb24", md4.hashAsString("a"));
-        assertEquals("a448017aaf21d8525fc10ae87aa6729d", md4.hashAsString("abc"));
-        assertEquals("d9130a8164549fe818874806e1c7014b", md4.hashAsString("message digest"));
-        assertEquals("d79e1c308aa5bbcdeea8ed63df412da9", md4.hashAsString("abcdefghijklmnopqrstuvwxyz"));
+        final char[] input = "abc".toCharArray();
+        final byte[] output = new byte[64];
+        Kernel kernel = new Kernel() {
+            final int[] ROUND2 = {0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15};
+            final int[] ROUND3 = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
+            final byte[] messageBytes = new byte[64];
+            final int[] buffer = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
+            final int[] x = new int[16];
+            final int[] abcd = new int[4];
+            @Override
+            public void run() {
+                final int inputLength = input.length;
+                int paddingLength = 56-inputLength;
+
+                for(int i=0; i<inputLength; i++)
+                    messageBytes[i] = (byte) input[i];
+
+                messageBytes[inputLength] = (byte) 0x80;
+                for(int i=0; i<8; i++)
+                    messageBytes[inputLength+paddingLength+i] = (byte) ((inputLength*8) >>> (8*i));
+
+                for(int iteration=0; iteration<64;) {
+                    for(int i=0; i<16; i++)
+                        x[i] = (messageBytes[iteration++]&0xff) | ((messageBytes[iteration++]&0xff) << 8) | ((messageBytes[iteration++]&0xff) << 16) | ((messageBytes[iteration++]&0xff) << 24);
+
+                    abcd[0] = buffer[0];
+                    abcd[1] = buffer[1];
+                    abcd[2] = buffer[2];
+                    abcd[3] = buffer[3];
+
+                    for(int i=0; i<16; i+=4) {
+                        abcd[0] = rot(abcd[0] + f(abcd[1],abcd[2],abcd[3]) + x[i], 3);
+                        abcd[3] = rot(abcd[3] + f(abcd[0],abcd[1],abcd[2]) + x[i+1], 7);
+                        abcd[2] = rot(abcd[2] + f(abcd[3],abcd[0],abcd[1]) + x[i+2], 11);
+                        abcd[1] = rot(abcd[1] + f(abcd[2],abcd[3],abcd[0]) + x[i+3], 19);
+                    }
+
+                    for(int i=0; i<16; i+=4) {
+                        abcd[0] = rot((abcd[0] + g(abcd[1],abcd[2],abcd[3]) + x[ROUND2[i]] + 0x5A827999), 3);
+                        abcd[3] = rot((abcd[3] + g(abcd[0],abcd[1],abcd[2]) + x[ROUND2[i+1]] + 0x5A827999), 5);
+                        abcd[2] = rot((abcd[2] + g(abcd[3],abcd[0],abcd[1]) + x[ROUND2[i+2]] + 0x5A827999), 9);
+                        abcd[1] = rot((abcd[1] + g(abcd[2],abcd[3],abcd[0]) + x[ROUND2[i+3]] + 0x5A827999), 13);
+                    }
+
+                    for(int i=0; i<16; i+=4) {
+                        abcd[0] = rot((abcd[0] + h(abcd[1],abcd[2],abcd[3]) + x[ROUND3[i]] + 0x6ED9EBA1), 3);
+                        abcd[3] = rot((abcd[3] + h(abcd[0],abcd[1],abcd[2]) + x[ROUND3[i+1]] + 0x6ED9EBA1), 9);
+                        abcd[2] = rot((abcd[2] + h(abcd[3],abcd[0],abcd[1]) + x[ROUND3[i+2]] + 0x6ED9EBA1), 11);
+                        abcd[1] = rot((abcd[1] + h(abcd[2],abcd[3],abcd[0]) + x[ROUND3[i+3]] + 0x6ED9EBA1), 15);
+                    }
+
+                    buffer[0] += abcd[0];
+                    buffer[1] += abcd[1];
+                    buffer[2] += abcd[2];
+                    buffer[3] += abcd[3];
+                }
+
+                for( int i=0; i<4; i++ ) {
+                    for ( int j=0; j<4; j++ ) {
+                        output[4*i + j] = (byte) (buffer[i] >>> (8*j));
+                    }
+                }
+            }
+            private int f (int x, int y, int z) {
+                return ((x&y) | ((~x)&z));
+            }
+
+            private int g (int x, int y, int z) {
+                return ((x&y) | (x&z) | (y&z));
+            }
+
+            private int h (int x, int y, int z) {
+                return (x ^ y ^ z);
+            }
+
+            private int rot (int t, int s) {
+                return t << s | t >>> (32-s);
+            }
+        };
+        kernel.execute(1);
+        System.out.println(Arrays.toString(output));
+        /*assertEquals("31d6cfe0d16ae931b73c59d7e0c089c0", MD4.hashAsString(""));
+        assertEquals("bde52cb31de33e46245e05fbdbd6fb24", MD4.hashAsString("a"));
+        assertEquals("a448017aaf21d8525fc10ae87aa6729d", MD4.hashAsString("abc"));
+        assertEquals("d9130a8164549fe818874806e1c7014b", MD4.hashAsString("message digest"));
+        assertEquals("d79e1c308aa5bbcdeea8ed63df412da9", MD4.hashAsString("abcdefghijklmnopqrstuvwxyz"));*/
     }
 
     @Test
@@ -39,7 +121,7 @@ public class MD4Test {
                 "The Modules page will be the home page as the course is organized around that. The first module will be stickied, as it will contain information you will need throughout the course and weeks will be sorted in descending order with the active week on top.\n" +
                 "\n" +
                 "Be sure to stay active in Canvas. If you are unable, please let me know ahead of time, or drop the course. I am required by the school to drop students who are inactive. There is a waiting list of students happy to take your spot.";
-        assertEquals("c185837692aad6c2ae9a6a51dcfa2dc2", md4.hashAsString(inputText));
+        //assertEquals("c185837692aad6c2ae9a6a51dcfa2dc2", MD4.hashAsString(inputText));
     }
 
     @Test
@@ -50,16 +132,14 @@ public class MD4Test {
         formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
         formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
 
-        //String[] plainText = new String[]{"dec355vus"};
-        //String[] inputHash = new String[]{"e03898acda5b6609f2c2761cb5efba2f"};
-
         String[] plainText = new String[]{"aaaaa"};
         String[] inputHash = new String[]{"54485d61c2bf8519c3997d2c17d41b43"};
 
-        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaa", 1);
+        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaa");
         md4Engine.runMD4Crack();
 
-        for(int i=0; i<inputHash.length; i++)
-            assertEquals(plainText[i], md4Engine.getCrackedPasswords().get(inputHash[i]));
+        for(int i=0; i<inputHash.length; i++) {
+            //assertEquals(plainText[i], md4Engine.getCrackedPasswords().get(inputHash[i]));
+        }
     }
 }

@@ -204,17 +204,16 @@ public class Client extends Application{
                 }
                 break;
             case "MD4 Hash":
-                MD4 md4 = new MD4();
                 if(key.toUpperCase().equals("LIST")) {
                     String[] list = inputText.split("\n");
                     StringBuilder output = new StringBuilder();
                     for(String str : list) {
-                        output.append(md4.hashAsString(str) + "\n");
+//                        output.append(MD4.hashAsString(str) + "\n");
                     }
 
                     outputText = output.toString();
                 } else {
-                    outputText = md4.hashAsString(inputText);
+//                    outputText = MD4.hashAsString(inputText);
                 }
                 createSecondWindow();
                 break;
@@ -260,13 +259,13 @@ public class Client extends Application{
                 formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
                 formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
 
-                MD4Engine md4Engine = new MD4Engine(list, formatMap, key, numThreads);
+                MD4Engine md4Engine = new MD4Engine(list, formatMap, key);
                 md4Engine.runMD4Crack();
 
-                HashMap<String, String> crackedPasswords = md4Engine.getCrackedPasswords();
+//                HashMap<String, String> crackedPasswords = md4Engine.getCrackedPasswords();
                 StringBuilder output = new StringBuilder();
                 for(String str : list) {
-                    output.append(str).append(" --> ").append(crackedPasswords.get(str)).append("\n");
+//                    output.append(str).append(" --> ").append(crackedPasswords.get(str)).append("\n");
                 }
                 outputText = output.toString();
                 createSecondWindow();
