@@ -1,6 +1,7 @@
 package edu.sdccd.cisc191;
 
 import com.aparapi.Kernel;
+import com.aparapi.Range;
 import edu.sdccd.cisc191.ciphers.Caesar;
 import edu.sdccd.cisc191.hashes.MD4;
 import edu.sdccd.cisc191.hashes.MD4Engine;
@@ -95,7 +96,8 @@ public class MD4Test {
                 return t << s | t >>> (32-s);
             }
         };
-        kernel.execute(1);
+        Range range = Range.create(1000000000);
+        kernel.execute(range);
         System.out.println(Arrays.toString(output));
         /*assertEquals("31d6cfe0d16ae931b73c59d7e0c089c0", MD4.hashAsString(""));
         assertEquals("bde52cb31de33e46245e05fbdbd6fb24", MD4.hashAsString("a"));
@@ -132,14 +134,14 @@ public class MD4Test {
         formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
         formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
 
-        String[] plainText = new String[]{"aaaaa"};
-        String[] inputHash = new String[]{"54485d61c2bf8519c3997d2c17d41b43"};
+        String[] plainText = new String[]{"aaaaa", "aaaab"};
+        String[] inputHash = new String[]{"54485d61c2bf8519c3997d2c17d41b43", "f9a9047babfe177af45b3240d1051e4c"};
 
         MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaa");
         md4Engine.runMD4Crack();
 
         for(int i=0; i<inputHash.length; i++) {
-            //assertEquals(plainText[i], md4Engine.getCrackedPasswords().get(inputHash[i]));
+            assertEquals(plainText[i], md4Engine.getCrackedPasswords().get(inputHash[i]));
         }
     }
 }

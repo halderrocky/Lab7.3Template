@@ -4,66 +4,98 @@ import com.aparapi.Kernel;
 import com.aparapi.Kernel;
 import com.aparapi.Range;
 
+import javax.print.DocFlavor;
 import java.util.Arrays;
 import java.util.HashMap;
 
 public class MD4Engine {
-    private char[][] format;
-    private String[] plainTextList;
-    private byte[][] hashBytes;
+    private char[] format;
+    private int[] formatLengths;
+    private byte[] hashBytes;
+    private String[] hashString;
+    private HashMap<String, String> crackedPasswords = new HashMap<>();
 
     private long numCombs = 1;
 
     public MD4Engine(String[] inputHashes, HashMap<Character, char[]> inFormatMap, String inFormat) {
-        hashBytes = new byte[inputHashes.length][];
+        hashString = inputHashes;
         hexToBytes(inputHashes);
 
-        format = new char[inFormat.length()][];
+        formatLengths = new int[inFormat.length()];
+        int n = 0;
+        for(int i=0; i<formatLengths.length; i++) {
+            formatLengths[i] = inFormatMap.get(inFormat.charAt(i)).length;
+            n += formatLengths[i];
+            numCombs*=formatLengths[i];
+        }
+        format = new char[n];
         setFormat(inFormatMap, inFormat);
-        plainTextList = new String[inputHashes.length];
     }
 
     public void runMD4Crack() {
-        final char[][][] localFormat = {format};
+        final char[] localFormat = format;
+        final int[] localFormatLengths = formatLengths;
+        final int[] wordLength = {formatLengths.length};
         final long[] localNumCombs = {numCombs};
-        final byte[][][] localHash = {hashBytes};
-        final String[][] localPlainText = {plainTextList};
-        final char[] currentPlain = new char[localFormat[0].length];
+        final byte[] localHash = hashBytes;
+        final char[] localPlainText = new char[hashString.length*formatLengths.length];
+        final int[] matchingCounter = {0};
 
         Kernel kernel = new Kernel() {
-            final char[] input = new char[16];
-            final byte[] output = new byte[64];
+            final byte[] output = new byte[16];
+            final char[] currentPlain = new char[wordLength[0]];
+
             @Override
             public void run() {
                 int iteration = getGlobalId();
-                /*long remComb = localNumCombs[0];
-                for(int i=0; i<localFormat[0].length; i++) {
-                    remComb /= localFormat[0][i].length;
-                    currentPlain[i] = localFormat[0][i][(int) ((iteration/remComb)%localFormat[0][i].length)];
+                long remComb = localNumCombs[0];
+
+                for(int i=0, index=0; i<wordLength[0]; i++) {
+                    remComb /= localFormatLengths[i];
+                    currentPlain[i] = localFormat[(int) ((iteration/remComb)%localFormatLengths[i] + index)];
+                    index += localFormatLengths[i];
                 }
 
-                for(int i=0; i<localHash[0].length; i++) {
-                    if(Arrays.equals(localHash[0][i], runMD4Digest(currentPlain)))
-                        localPlainText[0][i] = String.valueOf(currentPlain);
-                }*/
+                runMD4Digest();
+                int matchingHash = 0;
+
+
+                for(int i=0; i<localHash.length/16; i++) {
+                    for(int j=i*16; j<i*16+16; j++) {
+                        matchingHash += (localHash[j] - output[j-16*i]);
+                    }
+                    if(matchingHash == 0) {
+                        for(int j=0; j<currentPlain.length; j++) {
+                            localPlainText[j+i*wordLength[0]] = currentPlain[j];
+                            matchingCounter[0] ++;
+                        }
+                    }
+                }
             }
+
+
             final int[] ROUND2 = {0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15};
             final int[] ROUND3 = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
             final byte[] messageBytes = new byte[64];
             final int[] buffer = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
-            final int[] paddingLength = new int[1];
-            final int[] x = new int[16];
-            final int[] abcd = new int[4];
 
             public void runMD4Digest() {
-                paddingLength[0] = 56-input.length%64;
+                buffer[0] = 0x67452301;
+                buffer[1] = 0xefcdab89;
+                buffer[2] = 0x98badcfe;
+                buffer[3] = 0x10325476;
 
-                for(int i=0; i<input.length; i++)
-                    messageBytes[i] = (byte) input[i];
+                int[] abcd = new int[4];
+                int[] x = new int[16];
 
-                messageBytes[input.length] = (byte) 0x80; //Sets next byte to '10000000'
+                int paddingLength = 56-currentPlain.length%64;
+
+                for(int i=0; i<currentPlain.length; i++)
+                    messageBytes[i] = (byte) currentPlain[i];
+
+                messageBytes[currentPlain.length] = (byte) 0x80; //Sets next byte to '10000000'
                 for(int i=0; i<8; i++)
-                    messageBytes[input.length+paddingLength[0]+i] = (byte) ((input.length*8) >>> (8*i));
+                    messageBytes[currentPlain.length+paddingLength+i] = (byte) (( (long) currentPlain.length*8) >>> (8*i));
 
                 for(int iteration=0; iteration<messageBytes.length;) { //Each 16 words / 512 bits (64 bytes)
                     for(int i=0; i<16; i++)
@@ -124,32 +156,36 @@ public class MD4Engine {
             }
         };
 
-        //Range range = Range.create(10);
-        kernel.execute(256);
+        Range range = Range.create((int) numCombs);
+        kernel.execute(range);
 
-        plainTextList = localPlainText[0];
         kernel.dispose();
+        for(int i=0; i<localPlainText.length/wordLength[0]; i++) {
+            crackedPasswords.put(hashString[i], String.valueOf(Arrays.copyOfRange(localPlainText, i*wordLength[0], (i+1)*wordLength[0])));
+        }
+        System.out.println(matchingCounter[0]);
     }
 
     public void setFormat(HashMap<Character, char[]> inFormatMap, String inFormat) {
-        for(int i=0; i<format.length; i++) {
-            format[i] = inFormatMap.get(inFormat.charAt(i));
-            numCombs *= format[i].length;
+        for(int i=0, iteration=0; i<inFormat.length(); i++) {
+            char[] row = inFormatMap.get(inFormat.charAt(i));
+            for(int j=0; j<row.length; j++, iteration++)
+                format[iteration] = row[j];
         }
     }
 
     public void hexToBytes(String[] hashList) {
+        int len = hashList[0].length();
+        hashBytes = new byte[(len/2)*hashList.length];
         for(int i=0; i<hashList.length; i++) {
-            int len = hashList[0].length();
-            hashBytes[i] = new byte[len / 2];
             for (int j = 0; j < len; j += 2) {
-                hashBytes[i][j/2] = (byte) ((Character.digit(hashList[0].charAt(j), 16) << 4)
-                        + Character.digit(hashList[0].charAt(j+1), 16));
+                hashBytes[i*(len/2) + j/2] = (byte) ((Character.digit(hashList[i].charAt(j), 16) << 4)
+                        + Character.digit(hashList[i].charAt(j+1), 16));
             }
         }
     }
 
-    public String[] getPlainText() {
-        return plainTextList;
+    public HashMap<String, String> getCrackedPasswords() {
+        return crackedPasswords;
     }
 }
