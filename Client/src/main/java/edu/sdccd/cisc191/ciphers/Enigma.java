@@ -26,6 +26,8 @@ public class Enigma {
     }
 
     public String encode (String inputText) {
+        int[] rotorPositions = {rotor1.getRotorPosition(), rotor2.getRotorPosition(), rotor3.getRotorPosition()};
+
         StringBuilder output = new StringBuilder();
         for(char c : inputText.toUpperCase().toCharArray()) {
             rotor1.shift();
@@ -37,6 +39,11 @@ public class Enigma {
             }
             output.append(plugboard.get(enigmaTransform(plugboard.get(c))));
         }
+
+        rotor1.setRotorPosition(rotorPositions[0]);
+        rotor2.setRotorPosition(rotorPositions[1]);
+        rotor3.setRotorPosition(rotorPositions[2]);
+
         return output.toString();
     }
 
@@ -112,7 +119,7 @@ public class Enigma {
         private int[] setInitialPosition(int[] rotorType, int ringSetting) {
             int[] output = new int[26];
             for(int i=0; i<26; i++)
-                output[i] = rotorType[(i+ringSetting)%26];
+                output[i] = (rotorType[(i+26-ringSetting)%26]+ringSetting)%26;
             return output;
         }
 
@@ -127,6 +134,9 @@ public class Enigma {
         }
         public int getRotorPosition() {
             return rotorPosition;
+        }
+        public void setRotorPosition(int rotorPosition){
+            this.rotorPosition = rotorPosition;
         }
         public int getTurnoverPoint() {
             return turnoverPoint;

@@ -11,7 +11,8 @@ public class EnigmaTest {
 
     @Test
     public void testEnigmaEncryption() {
-        Enigma enigma = new Enigma(new int[]{3,3,1}, new int[]{2,4,1}, new int[]{1,5,1}, 'B', "jo ce ba yl");
-        System.out.println(enigma.encode("hello".toUpperCase()));
+        Enigma enigma = new Enigma(new int[]{3,3,3}, new int[]{2,2,2}, new int[]{1,1,1}, 'B', "AB CD EF GH IJ");
+        assertEquals("XKCCEGGHAX", enigma.encode("heil hitler".toUpperCase().replaceAll("[^A-Z]", "")));
+        assertEquals("HEILHITLER", enigma.encode("XKCCEGGHAX".toUpperCase().replaceAll("[^A-Z]", "")));
     }
 }
