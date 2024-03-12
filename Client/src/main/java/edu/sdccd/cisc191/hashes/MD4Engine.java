@@ -39,16 +39,22 @@ public class MD4Engine {
         final long[] localNumCombs = {numCombs};
         final byte[] localHash = hashBytes;
         final char[] localPlainText = new char[hashString.length*formatLengths.length];
-        final int[] matchingCounter = {0};
+        final int[] matchingIteration = new int[hashString.length];
+        //final char[] currentPlain = new char[wordLength[0]];
 
         Kernel kernel = new Kernel() {
-            final byte[] output = new byte[16];
-            final char[] currentPlain = new char[wordLength[0]];
+            final byte[] output = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+            final char[] currentPlain = {0,0,0,0,0};
 
             @Override
             public void run() {
                 int iteration = getGlobalId();
                 long remComb = localNumCombs[0];
+
+                for(int i=0; i<16; i++)
+                    output[i] = 0;
+                for(int i=0; i<5; i++)
+                    currentPlain[i] = 0;
 
                 for(int i=0, index=0; i<wordLength[0]; i++) {
                     remComb /= localFormatLengths[i];
@@ -57,18 +63,21 @@ public class MD4Engine {
                 }
 
                 runMD4Digest();
-                int matchingHash = 0;
-
+                if(output[0] == 84)
+                    matchingIteration[iteration] += 10;
+                if(currentPlain[4] == 'b')
+                    matchingIteration[iteration] += 100;
 
                 for(int i=0; i<localHash.length/16; i++) {
-                    for(int j=i*16; j<i*16+16; j++) {
-                        matchingHash += (localHash[j] - output[j-16*i]);
+                    int matchingHash = 0;
+                    for(int j=0; j<16; j++) {
+                        matchingHash += (localHash[j+16*i] - output[j]);
                     }
                     if(matchingHash == 0) {
                         for(int j=0; j<currentPlain.length; j++) {
                             localPlainText[j+i*wordLength[0]] = currentPlain[j];
-                            matchingCounter[0] ++;
                         }
+                        //matchingIteration[i] = iteration;
                     }
                 }
             }
@@ -76,8 +85,10 @@ public class MD4Engine {
 
             final int[] ROUND2 = {0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15};
             final int[] ROUND3 = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
-            final byte[] messageBytes = new byte[64];
+            final byte[] messageBytes = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
             final int[] buffer = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
+            final int[] abcd = {0,0,0,0};
+            final int[] x = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
 
             public void runMD4Digest() {
                 buffer[0] = 0x67452301;
@@ -85,8 +96,12 @@ public class MD4Engine {
                 buffer[2] = 0x98badcfe;
                 buffer[3] = 0x10325476;
 
-                int[] abcd = new int[4];
-                int[] x = new int[16];
+                abcd[0] = 0;
+                abcd[1] = 0;
+                abcd[2] = 0;
+                abcd[3] = 0;
+                for(int i=0; i<16; i++)
+                    x[i] = 0;
 
                 int paddingLength = 56-currentPlain.length%64;
 
@@ -156,14 +171,13 @@ public class MD4Engine {
             }
         };
 
-        Range range = Range.create((int) numCombs);
+        Range range = Range.create((int) 2);
         kernel.execute(range);
-
         kernel.dispose();
         for(int i=0; i<localPlainText.length/wordLength[0]; i++) {
             crackedPasswords.put(hashString[i], String.valueOf(Arrays.copyOfRange(localPlainText, i*wordLength[0], (i+1)*wordLength[0])));
         }
-        System.out.println(matchingCounter[0]);
+        System.out.println(Arrays.toString(matchingIteration));
     }
 
     public void setFormat(HashMap<Character, char[]> inFormatMap, String inFormat) {
