@@ -9,8 +9,7 @@ public class CipherTools {
     public static int[] getLetterFrequency(String inputText) {
         int[] letterFrequency = new int[26];
         for(int i=0; i<inputText.length(); i++) {
-            if(inputText.charAt(i)>=65 && inputText.charAt(i)<=90)
-                letterFrequency[inputText.charAt(i) - 'A']++;
+            letterFrequency[inputText.charAt(i) - 'A']++;
         }
         return letterFrequency;
     }
