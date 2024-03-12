@@ -88,10 +88,11 @@ public class Client extends Application{
                 "Vigenere Cipher",
                 "Atbash Cipher",
                 "Affine Cipher",
-                "MD4 Hash"
+                "MD4 Hash",
+                "Engima"
         );
         //listen for selection changes
-        combobox.setOnAction(e -> System.out.println(combobox.getValue()));
+
 
         //Get Help Button
         Button help = new Button("Help");
@@ -166,6 +167,14 @@ public class Client extends Application{
         layout.setAlignment(Pos.CENTER);
         layout.getChildren().addAll(label, layout2, layout3, textArea, files);
 
+
+        combobox.setOnAction(e -> {
+            switch(combobox.getValue()){
+                case "Engima":
+                    engimaWindow();
+                    break;
+            }
+        });
 
         scene = new Scene(layout, 800,600);
         window.setScene(scene);
@@ -320,5 +329,111 @@ public class Client extends Application{
             pw.println(outputText);
             pw.close();
         }
-    };
+    }
+    public static void engimaWindow(){
+        HBox layout2 = new HBox(20);
+        layout2.setAlignment(Pos.CENTER);
+        Label reflector = new Label("Reflector:");
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.getItems().addAll(
+                "UKW B",
+                "UKW C"
+        );
+
+        Button help = new Button("Help");
+        help.setOnAction(e -> {
+            AlertBox.display("Help", "Position and Ring must be a number from 1-26");
+        });
+        layout2.getChildren().addAll(reflector, comboBox, help);
+
+        Label rotor = new Label("Rotor 1:");
+        Label position = new Label("Position:");
+        Label ring = new Label("Ring:");
+
+        ComboBox<String> rotor1 = new ComboBox<>();
+        rotor1.getItems().addAll(
+                "I",
+                "II",
+                "III",
+                "IV",
+                "V",
+                "VI",
+                "VII",
+                "VIII"
+        );
+
+        TextField input1 = new TextField();
+        TextField input11 = new TextField();
+
+        HBox layout4 = new HBox(50);
+        layout4.setAlignment(Pos.CENTER);
+        layout4.getChildren().addAll(rotor, rotor1, position, input1, ring, input11);
+
+        Label rotor22 = new Label("Rotor 2:");
+        Label position2 = new Label("Position:");
+        Label ring2 = new Label("Ring:");
+
+        ComboBox<String> rotor2 = new ComboBox<>();
+        rotor2.getItems().addAll(
+                "I",
+                "II",
+                "III",
+                "IV",
+                "V",
+                "VI",
+                "VII",
+                "VIII"
+        );
+
+        TextField input2 = new TextField();
+        TextField input22 = new TextField();
+
+
+        HBox layout5 = new HBox(50);
+        layout5.setAlignment(Pos.CENTER);
+        layout5.getChildren().addAll(rotor22, rotor2, position2, input2, ring2, input22);
+
+        Label rotor33 = new Label("Rotor 3:");
+        Label position3 = new Label("Position:");
+        Label ring3 = new Label("Ring:");
+        ComboBox<String> rotor3 = new ComboBox<>();
+        rotor3.getItems().addAll(
+                "I",
+                "II",
+                "III",
+                "IV",
+                "V",
+                "VI",
+                "VII",
+                "VIII"
+        );
+
+        TextField input3 = new TextField();
+        TextField input33 = new TextField();
+
+        HBox layout6 = new HBox(50);
+        layout6.setAlignment(Pos.CENTER);
+        layout6.getChildren().addAll(rotor33, rotor3, position3, input3, ring3, input33);
+
+        TextArea textArea = new TextArea();
+        textArea.setWrapText(true);
+
+        Button back = new Button("Back");
+        back.setOnAction(e -> window.setScene(scene));
+
+        Button encode = new Button("Encode");
+        encode.setOnAction(e -> System.out.println("Encoding"));
+        Button decode = new Button("Decode");
+        decode.setOnAction(e -> System.out.println("Decoding"));
+        HBox layout7 = new HBox(10);
+        layout7.setAlignment(Pos.CENTER);
+        layout7.getChildren().addAll(encode, decode, back);
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(20, 20, 20, 20));
+        layout.setAlignment(Pos.CENTER);
+        layout.getChildren().addAll(layout2, layout4, layout5, layout6, textArea, layout7 );
+        Scene scene2 = new Scene(layout, 800, 600);
+        window.setScene(scene2);
+    }
 } //end class Client
