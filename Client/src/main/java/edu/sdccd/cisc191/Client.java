@@ -342,7 +342,8 @@ public class Client extends Application{
 
         Button help = new Button("Help");
         help.setOnAction(e -> {
-            AlertBox.display("Help", "Position and Ring must be a number from 1-26");
+            AlertBox.display("Help", "Position and Ring must be a number from 1-26" +
+                    "\nPlugboard must be pairs of unique letters (can't repeat the same letter)");
         });
         layout2.getChildren().addAll(reflector, comboBox, help);
 
@@ -415,15 +416,21 @@ public class Client extends Application{
         layout6.setAlignment(Pos.CENTER);
         layout6.getChildren().addAll(rotor33, rotor3, position3, input3, ring3, input33);
 
+        Label plugboard = new Label("Plugboard");
+        TextField plugboardInput = new TextField();
+
+        HBox layout8 = new HBox(20);
+        layout8.setAlignment(Pos.CENTER);
+        layout8.getChildren().addAll(plugboard, plugboardInput);
+
         TextArea textArea = new TextArea();
         textArea.setWrapText(true);
 
         Button back = new Button("Back");
         back.setOnAction(e -> window.setScene(scene));
-
         Button encode = new Button("Encode");
         encode.setOnAction(e -> System.out.println("Encoding"));
-        Button decode = new Button("Decode");
+        Button decode = new Button("Cryptanalyze");
         decode.setOnAction(e -> System.out.println("Decoding"));
         HBox layout7 = new HBox(10);
         layout7.setAlignment(Pos.CENTER);
@@ -432,7 +439,7 @@ public class Client extends Application{
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(layout2, layout4, layout5, layout6, textArea, layout7 );
+        layout.getChildren().addAll(layout2, layout4, layout5, layout6, layout8, textArea, layout7 );
         Scene scene2 = new Scene(layout, 800, 600);
         window.setScene(scene2);
     }
