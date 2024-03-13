@@ -363,12 +363,12 @@ public class Client extends Application{
                 "VIII"
         );
 
-        TextField input1 = new TextField();
-        TextField input11 = new TextField();
+        TextField positionInput = new TextField();
+        TextField ringInput = new TextField();
 
         HBox layout4 = new HBox(50);
         layout4.setAlignment(Pos.CENTER);
-        layout4.getChildren().addAll(rotor, rotor1, position, input1, ring, input11);
+        layout4.getChildren().addAll(rotor, rotor1, position, positionInput, ring, ringInput);
 
         Label rotor22 = new Label("Rotor 2:");
         Label position2 = new Label("Position:");
@@ -386,13 +386,13 @@ public class Client extends Application{
                 "VIII"
         );
 
-        TextField input2 = new TextField();
-        TextField input22 = new TextField();
+        TextField positionInput2 = new TextField();
+        TextField ringInput2 = new TextField();
 
 
         HBox layout5 = new HBox(50);
         layout5.setAlignment(Pos.CENTER);
-        layout5.getChildren().addAll(rotor22, rotor2, position2, input2, ring2, input22);
+        layout5.getChildren().addAll(rotor22, rotor2, position2, positionInput2, ring2, ringInput2);
 
         Label rotor33 = new Label("Rotor 3:");
         Label position3 = new Label("Position:");
@@ -409,12 +409,12 @@ public class Client extends Application{
                 "VIII"
         );
 
-        TextField input3 = new TextField();
-        TextField input33 = new TextField();
+        TextField positionInput3 = new TextField();
+        TextField ringInput3 = new TextField();
 
         HBox layout6 = new HBox(50);
         layout6.setAlignment(Pos.CENTER);
-        layout6.getChildren().addAll(rotor33, rotor3, position3, input3, ring3, input33);
+        layout6.getChildren().addAll(rotor33, rotor3, position3, positionInput3, ring3, ringInput3);
 
         Label plugboard = new Label("Plugboard");
         TextField plugboardInput = new TextField();
