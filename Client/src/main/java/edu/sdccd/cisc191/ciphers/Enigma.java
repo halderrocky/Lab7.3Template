@@ -30,13 +30,13 @@ public class Enigma extends CipherTools{
 
         StringBuilder output = new StringBuilder();
         for(char c : inputText.toUpperCase().toCharArray()) {
-            rotor1.shift();
-            if (rotor1.getRotorPosition() == rotor1.getTurnoverPoint()) {
+            if (rotor2.getRotorPosition() == rotor2.getTurnoverPoint() && rotor1.getRotorPosition() == rotor1.getTurnoverPoint()+1) {
+                rotor3.shift();
                 rotor2.shift();
-                if (rotor2.getRotorPosition() == rotor2.getTurnoverPoint()) {
-                    rotor3.shift();
-                }
             }
+            if (rotor1.getRotorPosition() == rotor1.getTurnoverPoint())
+                rotor2.shift();
+            rotor1.shift();
             output.append(plugboard.get(enigmaTransform(plugboard.get(c))));
         }
 
