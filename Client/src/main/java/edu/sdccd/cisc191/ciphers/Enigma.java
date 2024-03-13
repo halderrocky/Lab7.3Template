@@ -2,6 +2,7 @@ package edu.sdccd.cisc191.ciphers;
 
 import edu.sdccd.cisc191.CipherTools;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Enigma extends CipherTools{
@@ -48,14 +49,27 @@ public class Enigma extends CipherTools{
     }
 
     public static void cryptanalyze(String inputText) {
-        for(int i=0; i<5;i++){
-            for(int j=0; j<5; j++){
-                for(int k=0; k<5; k++){
-                    Enigma enigma = new Enigma(new int[]{i,1,1}, new int[]{j,1,1}, new int[]{k,1,1}, 'B', "");
+        int[] probableSettings = new int[6];
+        double maxIoC = Double.MIN_VALUE;
+
+        for (int iteration = 0; iteration < 125; iteration++) {
+            System.out.println(iteration);
+            int[] currentOrder = {iteration/25, iteration/5, iteration%26};
+            for (int i = 0; i < 26; i++) {
+                for (int j = 0; j < 26; j++) {
+                    for (int k = 0; k < 26; k++) {
+                        Enigma enigma = new Enigma(new int[]{currentOrder[0], i, 1}, new int[]{currentOrder[1], j, 1}, new int[]{currentOrder[2], k, 1}, 'B', "");
+                        double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
+                        if(IoC > maxIoC){
+                            maxIoC = IoC;
+                            probableSettings = new int[]{currentOrder[0], currentOrder[1], currentOrder[2], i, j, k};
+                        }
+                    }
                 }
             }
         }
-        System.out.println(findIndexOfCoincidence(inputText.length(), getLetterFrequency(inputText)));
+
+        System.out.println(Arrays.toString(probableSettings) + "\t" + maxIoC);
     }
 
     public char enigmaTransform (char c) {
@@ -135,10 +149,10 @@ public class Enigma extends CipherTools{
         }
 
         public int transform(int c) {
-            return (rotor[(c+rotorPosition)%26]-rotorPosition+26)%26;
+            return (rotor[(c+26+rotorPosition)%26]-rotorPosition+26)%26;
         }
         public int reverseTransform(int c) {
-            return (reverse[(c+rotorPosition)%26]-rotorPosition+26)%26;
+            return (reverse[(c+26+rotorPosition)%26]-rotorPosition+26)%26;
         }
         public void shift() {
             rotorPosition = (rotorPosition+1)%26;
