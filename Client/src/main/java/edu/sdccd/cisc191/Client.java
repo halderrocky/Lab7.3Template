@@ -1,10 +1,6 @@
 package edu.sdccd.cisc191;
 
-import edu.sdccd.cisc191.ciphers.Atbash;
-import edu.sdccd.cisc191.ciphers.Affine;
-import edu.sdccd.cisc191.ciphers.Caesar;
-import edu.sdccd.cisc191.ciphers.Hill;
-import edu.sdccd.cisc191.ciphers.Vigenere;
+import edu.sdccd.cisc191.ciphers.*;
 import edu.sdccd.cisc191.hashes.MD4;
 import edu.sdccd.cisc191.hashes.MD4Engine;
 import javafx.application.Application;
@@ -154,6 +150,21 @@ public class Client extends Application{
             }
         });
 
+        //get URL
+        TextField link = new TextField();
+        Button url = new Button("Get Link");
+        url.setOnAction(e -> {
+            try {
+                String content = CipherTools.getUrl(link.getText());
+                textArea.appendText(content);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        HBox layout4 = new HBox(10);
+        layout4.setAlignment(Pos.CENTER);
+        layout4.getChildren().addAll(link, url);
+
 
         //layout
         HBox layout2 = new HBox(10);
@@ -165,7 +176,7 @@ public class Client extends Application{
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(label, layout2, layout3, textArea, files);
+        layout.getChildren().addAll(label, layout2, layout3, textArea, files, layout4);
 
 
         combobox.setOnAction(e -> {
