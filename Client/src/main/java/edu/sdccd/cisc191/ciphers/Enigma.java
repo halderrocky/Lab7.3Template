@@ -31,13 +31,13 @@ public class Enigma extends CipherTools{
 
         StringBuilder output = new StringBuilder();
         for(char c : inputText.toUpperCase().toCharArray()) {
-            if (rotor2.getRotorPosition() == rotor2.getTurnoverPoint() && rotor1.getRotorPosition() == rotor1.getTurnoverPoint()+1) {
-                rotor3.shift();
+            if (rotor3.getRotorPosition() == rotor3.getTurnoverPoint())
+                rotor2.shift();
+            if (rotor2.getRotorPosition() == rotor2.getTurnoverPoint() && rotor3.getRotorPosition() == (rotor3.getTurnoverPoint()+1)%26) {
+                rotor1.shift();
                 rotor2.shift();
             }
-            if (rotor1.getRotorPosition() == rotor1.getTurnoverPoint())
-                rotor2.shift();
-            rotor1.shift();
+            rotor3.shift();
             output.append(plugboard.get(enigmaTransform(plugboard.get(c))));
         }
 
@@ -53,19 +53,23 @@ public class Enigma extends CipherTools{
         double maxIoC = Double.MIN_VALUE;
 
         for (int iteration = 0; iteration < 125; iteration++) {
-            System.out.println(iteration);
-            int[] currentOrder = {iteration/25, iteration/5, iteration%26};
-            for (int i = 0; i < 26; i++) {
-                for (int j = 0; j < 26; j++) {
-                    for (int k = 0; k < 26; k++) {
-                        Enigma enigma = new Enigma(new int[]{currentOrder[0], i, 1}, new int[]{currentOrder[1], j, 1}, new int[]{currentOrder[2], k, 1}, 'B', "");
-                        double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
-                        if(IoC > maxIoC){
-                            maxIoC = IoC;
-                            probableSettings = new int[]{currentOrder[0], currentOrder[1], currentOrder[2], i, j, k};
+            double rotorIoC = 0;
+            int[] currentOrder = {1+iteration/25, 1+(iteration/5)%5, 1+iteration%5};
+            if(currentOrder[0] != currentOrder[1] && currentOrder[0] != currentOrder[2] && currentOrder[1] != currentOrder[2]) {
+                for (int i = 1; i < 27; i++) {
+                    for (int j = 1; j < 27; j++) {
+                        for (int k = 1; k < 27; k++) {
+                            Enigma enigma = new Enigma(new int[]{currentOrder[0], i, 1}, new int[]{currentOrder[1], j, 1}, new int[]{currentOrder[2], k, 1}, 'B', "");
+                            double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
+                            if (IoC > maxIoC) {
+                                maxIoC = IoC;
+                                probableSettings = new int[]{currentOrder[0], currentOrder[1], currentOrder[2], i, j, k};
+                            }
+                            rotorIoC = Math.max(IoC, rotorIoC);
                         }
                     }
                 }
+                System.out.println(Arrays.toString(currentOrder) + "\t" + rotorIoC);
             }
         }
 
@@ -75,13 +79,13 @@ public class Enigma extends CipherTools{
     public char enigmaTransform (char c) {
         int l = c-'A';
 
-        l = rotor1.transform(l);
-        l = rotor2.transform(l);
         l = rotor3.transform(l);
+        l = rotor2.transform(l);
+        l = rotor1.transform(l);
         l = reflector[l];
-        l = rotor3.reverseTransform(l);
-        l = rotor2.reverseTransform(l);
         l = rotor1.reverseTransform(l);
+        l = rotor2.reverseTransform(l);
+        l = rotor3.reverseTransform(l);
 
         return (char) (l + 'A');
     }
@@ -121,7 +125,7 @@ public class Enigma extends CipherTools{
                     break;
                 case 2:
                     rotor = setInitialPosition(ROTOR_2, ringSetting-1);
-                    turnoverPoint = 5;
+                    turnoverPoint = 4;
                     break;
                 case 3:
                     rotor = setInitialPosition(ROTOR_3, ringSetting-1);
