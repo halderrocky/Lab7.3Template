@@ -16,11 +16,11 @@ public class Enigma extends CipherTools{
     private int[] reflector;
     private HashMap<Character, Character> plugboard = new HashMap<>();
 
-    public Enigma (int[] rotor1, int[] rotor2, int[] rotor3, char reflectorType, String letterPairs) {
+    public Enigma (int[] rotor1, int[] rotor2, int[] rotor3, String reflectorType, String letterPairs) {
         this.rotor1 = new Rotor(rotor1[0], rotor1[1], rotor1[2]);
         this.rotor2 = new Rotor(rotor2[0], rotor2[1], rotor2[2]);
         this.rotor3 = new Rotor(rotor3[0], rotor3[1], rotor3[2]);
-        if(reflectorType == 'B')
+        if(reflectorType.equals("UKW B"))
             reflector = UKWB;
         else
             reflector = UKWC;
@@ -47,105 +47,6 @@ public class Enigma extends CipherTools{
         rotor3.setRotorPosition(rotorPositions[2]);
 
         return output.toString();
-    }
-
-    public static String cryptanalyze(String inputText) {
-        int[] probableSettings = new int[9];
-        double maxIoC = Double.MIN_VALUE;
-        char reflectorType = 'B';
-
-        /*Enigma testReflectorB = new Enigma(new int[]{1,1,1}, new int[]{1,1,1}, new int[]{1,1,1}, 'B', "");
-        Enigma testReflectorC = new Enigma(new int[]{1,1,1}, new int[]{1,1,1}, new int[]{1,1,1}, 'C', "");
-        if(findIndexOfCoincidence(inputText.length(),getLetterFrequency(testReflectorB.encode(inputText))) < findIndexOfCoincidence(inputText.length(),getLetterFrequency(testReflectorC.encode(inputText))))
-            reflectorType = 'C';*/
-
-        System.out.println("Most Probable Reflector: UKW " + reflectorType + "\n");
-
-        for (int iteration = 0; iteration < 125; iteration++) {
-            double rotorIoC = 0;
-            int[] currentOrder = {1+iteration/25, 1+(iteration/5)%5, 1+iteration%5};
-            if(currentOrder[0] != currentOrder[1] && currentOrder[0] != currentOrder[2] && currentOrder[1] != currentOrder[2]) {
-                for (int i = 1; i < 27; i++) {
-                    for (int j = 1; j < 27; j++) {
-                        for (int k = 1; k < 27; k++) {
-                            Enigma enigma = new Enigma(new int[]{currentOrder[0], i, 1}, new int[]{currentOrder[1], j, 1}, new int[]{currentOrder[2], k, 1}, reflectorType, "");
-                            double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
-                            if (IoC > maxIoC) {
-                                maxIoC = IoC;
-                                probableSettings = new int[]{currentOrder[0], currentOrder[1], currentOrder[2], i, j, k, 1, 1, 1};
-                            }
-                            rotorIoC = Math.max(IoC, rotorIoC);
-                        }
-                    }
-                }
-                System.out.println(Arrays.toString(currentOrder) + "\t" + rotorIoC);
-            }
-        }
-
-        System.out.println("\nMost Probable Rotor Order: \n" + Arrays.toString(Arrays.copyOfRange(probableSettings,0,3)) + "\n");
-
-        //Rotor 3 -- Fastest Rotor
-        int rotorPos = probableSettings[5];
-        for(int i=1; i<27; i++) {
-            Enigma enigma = new Enigma(new int[]{probableSettings[0], probableSettings[3], 1}, new int[]{probableSettings[1], probableSettings[4], 1}, new int[]{probableSettings[2], rotorPos, i}, reflectorType, "");
-            double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
-            if (IoC > maxIoC) {
-                maxIoC = IoC;
-                probableSettings[8] = i;
-            }
-            rotorPos = (probableSettings[5]+i)/27 + (probableSettings[5]+i)%27;
-        }
-        probableSettings[5] = (probableSettings[5]+probableSettings[8])/26 + (probableSettings[5]+probableSettings[8])%26 - 1;
-
-        //Rotor 2 -- Middle Rotor
-        rotorPos = probableSettings[4];
-        for(int i=1; i<27; i++) {
-            Enigma enigma = new Enigma(new int[]{probableSettings[0], probableSettings[3], 1}, new int[]{probableSettings[1], rotorPos, i}, new int[]{probableSettings[2], probableSettings[5], probableSettings[8]}, reflectorType, "");
-            double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
-            if (IoC > maxIoC) {
-                maxIoC = IoC;
-                probableSettings[7] = i;
-            }
-            rotorPos = (probableSettings[4]+i)/27 + (probableSettings[4]+i)%27;
-        }
-        probableSettings[4] = (probableSettings[4]+probableSettings[7])/26 + (probableSettings[4]+probableSettings[7])%26 - 1;
-
-        System.out.println("Most Probable Rotor Settings [Rotor Order] [Initial Position] [Ring Setting]:\n" + Arrays.toString(probableSettings) + "\t" + maxIoC);
-
-        HashSet<Integer> pluggedLetters = new HashSet<>();
-        String currentBoard = "";
-        for(int iteration=0; iteration<10; iteration++){
-            String bestPair = "";
-
-            for(int i=0; i<26; i++) {
-                for(int j=0; j<26; j++) {
-                    if(!pluggedLetters.contains(i) && !pluggedLetters.contains(j)) {
-                        String plugboardPair = String.valueOf((char)(i + 'A')) + (char) (j + 'A');
-                        Enigma enigma = new Enigma(new int[]{probableSettings[0], probableSettings[3], probableSettings[6]}, new int[]{probableSettings[1], probableSettings[4], probableSettings[7]}, new int[]{probableSettings[2], probableSettings[5], probableSettings[8]}, reflectorType, currentBoard + plugboardPair);
-                        double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
-                        if (IoC > maxIoC) {
-                            maxIoC = IoC;
-                            bestPair = plugboardPair;
-                        }
-                    }
-                }
-            }
-
-            if(bestPair.length() < 2)
-                break;
-            currentBoard += bestPair + " ";
-            pluggedLetters.add(bestPair.charAt(0)-'A');
-            pluggedLetters.add(bestPair.charAt(1)-'A');
-        }
-
-        System.out.println("\nMost Probable Plugboard Configuration:\n" + currentBoard + "\t" + maxIoC);
-
-
-        Enigma enigma = new Enigma(new int[]{probableSettings[0], probableSettings[3], probableSettings[6]}, new int[]{probableSettings[1], probableSettings[4], probableSettings[7]}, new int[]{probableSettings[2], probableSettings[5], probableSettings[8]}, 'B', currentBoard);
-
-        System.out.println("\nDecrypted Message:\n" + enigma.encode(inputText));
-
-        return enigma.encode(inputText);
     }
 
     public char enigmaTransform (char c) {

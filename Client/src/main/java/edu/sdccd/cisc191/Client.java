@@ -1,10 +1,6 @@
 package edu.sdccd.cisc191;
 
-import edu.sdccd.cisc191.ciphers.Atbash;
-import edu.sdccd.cisc191.ciphers.Affine;
-import edu.sdccd.cisc191.ciphers.Caesar;
-import edu.sdccd.cisc191.ciphers.Hill;
-import edu.sdccd.cisc191.ciphers.Vigenere;
+import edu.sdccd.cisc191.ciphers.*;
 import edu.sdccd.cisc191.hashes.MD4;
 import edu.sdccd.cisc191.hashes.MD4Engine;
 import javafx.application.Application;
@@ -429,7 +425,9 @@ public class Client extends Application{
         Button back = new Button("Back");
         back.setOnAction(e -> window.setScene(scene));
         Button encode = new Button("Encode");
-        encode.setOnAction(e -> System.out.println("Encoding"));
+        encode.setOnAction(e -> {
+            //Enigma enigma = new Enigma(new int[]{Integer.parseInt(rotor1.getValue()),5,1}, new int[]{3,10,2}, new int[]{1,15,3}, comboBox.getValue(), plugboardInput.getText());
+        });
         Button decode = new Button("Cryptanalyze");
         decode.setOnAction(e -> System.out.println("Decoding"));
         HBox layout7 = new HBox(10);
