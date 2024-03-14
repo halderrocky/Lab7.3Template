@@ -1,10 +1,6 @@
 package edu.sdccd.cisc191;
 
-import edu.sdccd.cisc191.ciphers.Atbash;
-import edu.sdccd.cisc191.ciphers.Affine;
-import edu.sdccd.cisc191.ciphers.Caesar;
-import edu.sdccd.cisc191.ciphers.Hill;
-import edu.sdccd.cisc191.ciphers.Vigenere;
+import edu.sdccd.cisc191.ciphers.*;
 import edu.sdccd.cisc191.hashes.MD4;
 import edu.sdccd.cisc191.hashes.MD4Engine;
 import javafx.application.Application;
@@ -88,7 +84,8 @@ public class Client extends Application{
                 "Vigenere Cipher",
                 "Atbash Cipher",
                 "Affine Cipher",
-                "MD4 Hash"
+                "MD4 Hash",
+                "Morse Code"
         );
         //listen for selection changes
         combobox.setOnAction(e -> System.out.println(combobox.getValue()));
@@ -218,6 +215,10 @@ public class Client extends Application{
                 }
                 createSecondWindow();
                 break;
+            case "Morse Code":
+                outputText = MorseCode.engToMor(inputText);
+                createSecondWindow();
+                break;
         }
     }
 
@@ -269,6 +270,10 @@ public class Client extends Application{
                     output.append(str).append(" --> ").append(crackedPasswords.get(str)).append("\n");
                 }
                 outputText = output.toString();
+                createSecondWindow();
+                break;
+            case "Morse Code":
+                outputText = MorseCode.morToEng(inputText);
                 createSecondWindow();
                 break;
         }
