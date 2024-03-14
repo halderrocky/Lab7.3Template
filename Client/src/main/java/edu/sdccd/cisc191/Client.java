@@ -41,7 +41,7 @@ public class Client extends Application{
     ComboBox<String> combobox;
     private static TextArea textArea;
     private static Stage window;
-    private static Scene scene;
+    private static Scene scene, scene2, scene3;
     private static String outputText;
 
     public void startConnection(String ip, int port) throws IOException {
@@ -311,7 +311,7 @@ public class Client extends Application{
         output.setPrefSize(300,200);
 
         Button back = new Button("Back");
-        back.setOnAction(e -> window.setScene(scene));
+        back.setOnAction(e -> window.getScene());
 
         Button file = new Button("Get File");
         file.setOnAction(e -> {
@@ -330,7 +330,7 @@ public class Client extends Application{
         layout4.setPadding(new Insets(50,50,50,50));
         layout4.setAlignment(Pos.CENTER);
         layout4.getChildren().addAll(answer, output, view);
-        Scene scene2 = new Scene(layout4, 800, 600);
+        scene2 = new Scene(layout4, 800, 600);
         window.setScene(scene2);
     }
 
@@ -367,15 +367,75 @@ public class Client extends Application{
         });
         layout2.getChildren().addAll(reflector, comboBox, help);
 
-        Label rotor = new Label("Rotor 1:");
-        HBox layout4 = rotor(rotor);
+        Label rotorLabel = new Label("Rotor 1:");
+        Label positionLabel = new Label("Position:");
+        Label ringLabel = new Label("Ring:");
+
+        ComboBox<String> rotor = new ComboBox<>();
+        rotor.getItems().addAll(
+                "I",
+                "II",
+                "III",
+                "IV",
+                "V",
+                "VI",
+                "VII",
+                "VIII"
+        );
+
+        TextField positionInput = new TextField();
+        TextField ringInput = new TextField();
+
+        HBox layout4 = new HBox(50);
+        layout4.setAlignment(Pos.CENTER);
+        layout4.getChildren().addAll(rotorLabel, rotor, positionLabel, positionInput, ringLabel, ringInput);
 
 
-        Label rotor22 = new Label("Rotor 2:");
-        HBox layout5 = rotor(rotor22);
+        Label rotorLabel2 = new Label("Rotor 2:");
+        Label positionLabel2 = new Label("Position:");
+        Label ringLabel2 = new Label("Ring:");
 
-        Label rotor33 = new Label("Rotor 3:");
-        HBox layout6 = rotor(rotor33);
+        ComboBox<String> rotor2 = new ComboBox<>();
+        rotor2.getItems().addAll(
+                "I",
+                "II",
+                "III",
+                "IV",
+                "V",
+                "VI",
+                "VII",
+                "VIII"
+        );
+
+        TextField positionInput2 = new TextField();
+        TextField ringInput2 = new TextField();
+
+        HBox layout5 = new HBox(50);
+        layout5.setAlignment(Pos.CENTER);
+        layout5.getChildren().addAll(rotorLabel2, rotor2, positionLabel2, positionInput2, ringLabel2, ringInput2);
+
+        Label rotorLabel3 = new Label("Rotor 3:");
+        Label positionLabel3 = new Label("Position:");
+        Label ringLabel3 = new Label("Ring:");
+
+        ComboBox<String> rotor3 = new ComboBox<>();
+        rotor3.getItems().addAll(
+                "I",
+                "II",
+                "III",
+                "IV",
+                "V",
+                "VI",
+                "VII",
+                "VIII"
+        );
+
+        TextField positionInput3 = new TextField();
+        TextField ringInput3 = new TextField();
+
+        HBox layout6 = new HBox(50);
+        layout6.setAlignment(Pos.CENTER);
+        layout6.getChildren().addAll(rotorLabel3, rotor3, positionLabel3, positionInput3, ringLabel3, ringInput3);
 
         Label plugboard = new Label("Plugboard");
         TextField plugboardInput = new TextField();
@@ -405,7 +465,7 @@ public class Client extends Application{
         back.setOnAction(e -> window.setScene(scene));
         Button encode = new Button("Encode");
         encode.setOnAction(e -> {
-            Enigma enigma = new Enigma(new int[]{CipherTools.romanToInteger(rotor1.getValue()),Integer.parseInt(positionInput.getText()),Integer.parseInt(ringInput.getText())},
+            Enigma enigma = new Enigma(new int[]{CipherTools.romanToInteger(rotor.getValue()),Integer.parseInt(positionInput.getText()),Integer.parseInt(ringInput.getText())},
                     new int[]{CipherTools.romanToInteger(rotor2.getValue()),Integer.parseInt(positionInput2.getText()),Integer.parseInt(ringInput2.getText())},
                     new int[]{CipherTools.romanToInteger(rotor3.getValue()),Integer.parseInt(positionInput3.getText()),Integer.parseInt(ringInput3.getText())}, comboBox.getValue(), plugboardInput.getText());
             outputText = enigma.encode(textArea.getText().toUpperCase().replaceAll("[^A-Z]", ""));
@@ -425,32 +485,7 @@ public class Client extends Application{
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
         layout.getChildren().addAll(layout2, layout4, layout5, layout6, layout8, textArea, layout9, layout7 );
-        Scene scene2 = new Scene(layout, 800, 600);
-        window.setScene(scene2);
-    }
-
-    private static HBox rotor(Label rotor) {
-        Label position = new Label("Position:");
-        Label ring = new Label("Ring:");
-
-        ComboBox<String> rotor1 = new ComboBox<>();
-        rotor1.getItems().addAll(
-                "I",
-                "II",
-                "III",
-                "IV",
-                "V",
-                "VI",
-                "VII",
-                "VIII"
-        );
-
-        TextField positionInput = new TextField();
-        TextField ringInput = new TextField();
-
-        HBox layout4 = new HBox(50);
-        layout4.setAlignment(Pos.CENTER);
-        layout4.getChildren().addAll(rotor, rotor1, position, positionInput, ring, ringInput);
-        return layout4;
+        scene3 = new Scene(layout, 800, 600);
+        window.setScene(scene3);
     }
 } //end class Client
