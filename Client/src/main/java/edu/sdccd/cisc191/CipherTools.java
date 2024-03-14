@@ -1,5 +1,14 @@
 package edu.sdccd.cisc191;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class CipherTools {
     public static final double[] LETTER_FREQ = {0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015, 0.06094, 0.06966, 0.000153, 0.00772, 0.04025, 0.02406, 0.06749, 0.07507, 0.01929, 0.00095, 0.05987, 0.06327, 0.09056, 0.02758, 0.00978, 0.0236, 0.0015, 0.01974, 0.00074};
 
@@ -73,5 +82,14 @@ public class CipherTools {
                 break;
         }
         return integer;
+    }
+
+    public static String getUrl(String input) throws Exception {
+        try {
+            Document document = Jsoup.connect(input).get();
+            return document.text();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -40,6 +40,23 @@ public class Server {
         serverSocket.close();
     }
 
+//    public String getUrl(String input) throws Exception{
+//        URL website = new URL(input);
+//        URLConnection connection = website.openConnection();
+//        BufferedReader in = new BufferedReader(
+//                new InputStreamReader(
+//                        connection.getInputStream()));
+//
+//        StringBuilder response = new StringBuilder();
+//        String inputLine;
+//
+//        while ((inputLine = in.readLine()) != null)
+//            response.append(inputLine);
+//
+//        in.close();
+//
+//        return response.toString();
+//    }
     public static void main(String[] args) {
         Server server = new Server();
         try {
