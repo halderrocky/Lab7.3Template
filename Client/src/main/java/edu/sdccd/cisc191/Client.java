@@ -86,7 +86,8 @@ public class Client extends Application{
                 "Atbash Cipher",
                 "Affine Cipher",
                 "MD4 Hash",
-                "Enigma"
+                "Enigma",
+                "Morse Code"
         );
         //listen for selection changes
 
@@ -238,6 +239,10 @@ public class Client extends Application{
                 }
                 createSecondWindow();
                 break;
+            case "Morse Code":
+                outputText = MorseCode.engToMor(inputText);
+                createSecondWindow();
+                break;
         }
     }
 
@@ -289,6 +294,10 @@ public class Client extends Application{
                     output.append(str).append(" --> ").append(crackedPasswords.get(str)).append("\n");
                 }
                 outputText = output.toString();
+                createSecondWindow();
+                break;
+            case "Morse Code":
+                outputText = MorseCode.morToEng(inputText);
                 createSecondWindow();
                 break;
         }
