@@ -53,7 +53,7 @@ public class CipherTools {
             chiSquared += (Math.pow((letterFrequency[(l+shift)%26] - (length*LETTER_FREQ[l])),2))/(LETTER_FREQ[l]*length);
         return chiSquared;
     }
-    public static int romantoInteger(String romanNumeral){
+    public static int romanToInteger(String romanNumeral){
         int integer = 0;
         switch(romanNumeral){
             case("I"):

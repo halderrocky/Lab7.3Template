@@ -4,6 +4,7 @@ import edu.sdccd.cisc191.CipherTools;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Enigma extends CipherTools{
     private final int[] UKWB = {24,17,20,7,16,18,11,3,15,23,13,6,14,10,12,8,4,1,5,25,2,22,21,9,0,19};
@@ -15,11 +16,11 @@ public class Enigma extends CipherTools{
     private int[] reflector;
     private HashMap<Character, Character> plugboard = new HashMap<>();
 
-    public Enigma (int[] rotor1, int[] rotor2, int[] rotor3, char reflectorType, String letterPairs) {
+    public Enigma (int[] rotor1, int[] rotor2, int[] rotor3, String reflectorType, String letterPairs) {
         this.rotor1 = new Rotor(rotor1[0], rotor1[1], rotor1[2]);
         this.rotor2 = new Rotor(rotor2[0], rotor2[1], rotor2[2]);
         this.rotor3 = new Rotor(rotor3[0], rotor3[1], rotor3[2]);
-        if(reflectorType == 'B')
+        if(reflectorType.equals("UKW B"))
             reflector = UKWB;
         else
             reflector = UKWC;
@@ -31,13 +32,13 @@ public class Enigma extends CipherTools{
 
         StringBuilder output = new StringBuilder();
         for(char c : inputText.toUpperCase().toCharArray()) {
-            if (rotor2.getRotorPosition() == rotor2.getTurnoverPoint() && rotor1.getRotorPosition() == rotor1.getTurnoverPoint()+1) {
-                rotor3.shift();
+            if (rotor3.getRotorPosition() == rotor3.getTurnoverPoint())
+                rotor2.shift();
+            if (rotor2.getRotorPosition() == rotor2.getTurnoverPoint() && rotor3.getRotorPosition() == (rotor3.getTurnoverPoint()+1)%26) {
+                rotor1.shift();
                 rotor2.shift();
             }
-            if (rotor1.getRotorPosition() == rotor1.getTurnoverPoint())
-                rotor2.shift();
-            rotor1.shift();
+            rotor3.shift();
             output.append(plugboard.get(enigmaTransform(plugboard.get(c))));
         }
 
@@ -48,40 +49,16 @@ public class Enigma extends CipherTools{
         return output.toString();
     }
 
-    public static void cryptanalyze(String inputText) {
-        int[] probableSettings = new int[6];
-        double maxIoC = Double.MIN_VALUE;
-
-        for (int iteration = 0; iteration < 125; iteration++) {
-            System.out.println(iteration);
-            int[] currentOrder = {iteration/25, iteration/5, iteration%26};
-            for (int i = 0; i < 26; i++) {
-                for (int j = 0; j < 26; j++) {
-                    for (int k = 0; k < 26; k++) {
-                        Enigma enigma = new Enigma(new int[]{currentOrder[0], i, 1}, new int[]{currentOrder[1], j, 1}, new int[]{currentOrder[2], k, 1}, 'B', "");
-                        double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
-                        if(IoC > maxIoC){
-                            maxIoC = IoC;
-                            probableSettings = new int[]{currentOrder[0], currentOrder[1], currentOrder[2], i, j, k};
-                        }
-                    }
-                }
-            }
-        }
-
-        System.out.println(Arrays.toString(probableSettings) + "\t" + maxIoC);
-    }
-
     public char enigmaTransform (char c) {
         int l = c-'A';
 
-        l = rotor1.transform(l);
-        l = rotor2.transform(l);
         l = rotor3.transform(l);
+        l = rotor2.transform(l);
+        l = rotor1.transform(l);
         l = reflector[l];
-        l = rotor3.reverseTransform(l);
-        l = rotor2.reverseTransform(l);
         l = rotor1.reverseTransform(l);
+        l = rotor2.reverseTransform(l);
+        l = rotor3.reverseTransform(l);
 
         return (char) (l + 'A');
     }
@@ -121,7 +98,7 @@ public class Enigma extends CipherTools{
                     break;
                 case 2:
                     rotor = setInitialPosition(ROTOR_2, ringSetting-1);
-                    turnoverPoint = 5;
+                    turnoverPoint = 4;
                     break;
                 case 3:
                     rotor = setInitialPosition(ROTOR_3, ringSetting-1);
