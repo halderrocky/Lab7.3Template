@@ -426,10 +426,18 @@ public class Client extends Application{
         back.setOnAction(e -> window.setScene(scene));
         Button encode = new Button("Encode");
         encode.setOnAction(e -> {
-            //Enigma enigma = new Enigma(new int[]{Integer.parseInt(rotor1.getValue()),5,1}, new int[]{3,10,2}, new int[]{1,15,3}, comboBox.getValue(), plugboardInput.getText());
+            Enigma enigma = new Enigma(new int[]{CipherTools.romanToInteger(rotor1.getValue()),Integer.parseInt(positionInput.getText()),Integer.parseInt(ringInput.getText())},
+                    new int[]{CipherTools.romanToInteger(rotor2.getValue()),Integer.parseInt(positionInput2.getText()),Integer.parseInt(ringInput2.getText())},
+                    new int[]{CipherTools.romanToInteger(rotor3.getValue()),Integer.parseInt(positionInput3.getText()),Integer.parseInt(ringInput3.getText())}, comboBox.getValue(), plugboardInput.getText());
+            outputText = enigma.encode(textArea.getText().toUpperCase().replaceAll("[^A-Z]", ""));
+            createSecondWindow();
         });
         Button decode = new Button("Cryptanalyze");
-        decode.setOnAction(e -> System.out.println("Decoding"));
+        decode.setOnAction(e -> {
+            EnigmaEngine engine = new EnigmaEngine(textArea.getText().toUpperCase().replaceAll("[^A-Z]", ""));
+            outputText = engine.cryptanalyze();
+            createSecondWindow();
+        });
         HBox layout7 = new HBox(10);
         layout7.setAlignment(Pos.CENTER);
         layout7.getChildren().addAll(encode, decode, back);

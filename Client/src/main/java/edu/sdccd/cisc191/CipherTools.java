@@ -44,4 +44,34 @@ public class CipherTools {
             chiSquared += (Math.pow((letterFrequency[(l+shift)%26] - (length*LETTER_FREQ[l])),2))/(LETTER_FREQ[l]*length);
         return chiSquared;
     }
+    public static int romanToInteger(String romanNumeral){
+        int integer = 0;
+        switch(romanNumeral){
+            case("I"):
+                integer = 1;
+                break;
+            case("II"):
+                integer = 2;
+                break;
+            case("III"):
+                integer = 3;
+                break;
+            case("IV"):
+                integer = 4;
+                break;
+            case("V"):
+                integer = 5;
+                break;
+            case("VI"):
+                integer = 6;
+                break;
+            case("VII"):
+                integer = 7;
+                break;
+            case("VIII"):
+                integer = 8;
+                break;
+        }
+        return integer;
+    }
 }
