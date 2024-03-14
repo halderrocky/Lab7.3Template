@@ -1,5 +1,6 @@
 package edu.sdccd.cisc191;
 
+import com.sun.security.ntlm.Server;
 import edu.sdccd.cisc191.ciphers.*;
 import edu.sdccd.cisc191.hashes.MD4;
 import edu.sdccd.cisc191.hashes.MD4Engine;
@@ -38,7 +39,7 @@ public class Client extends Application{
     private PrintWriter out;
     private BufferedReader in;
     ComboBox<String> combobox;
-    private TextArea textArea;
+    private static TextArea textArea;
     private static Stage window;
     private static Scene scene;
     private static String outputText;
@@ -85,7 +86,7 @@ public class Client extends Application{
                 "Atbash Cipher",
                 "Affine Cipher",
                 "MD4 Hash",
-                "Engima"
+                "Enigma"
         );
         //listen for selection changes
 
@@ -165,7 +166,6 @@ public class Client extends Application{
         layout4.setAlignment(Pos.CENTER);
         layout4.getChildren().addAll(link, url);
 
-
         //layout
         HBox layout2 = new HBox(10);
         layout2.getChildren().addAll(input, combobox, help);
@@ -181,8 +181,8 @@ public class Client extends Application{
 
         combobox.setOnAction(e -> {
             switch(combobox.getValue()){
-                case "Engima":
-                    engimaWindow();
+                case "Enigma":
+                    enigmaWindow();
                     break;
             }
         });
@@ -341,7 +341,7 @@ public class Client extends Application{
             pw.close();
         }
     }
-    public static void engimaWindow(){
+    public static void enigmaWindow(){
         HBox layout2 = new HBox(20);
         layout2.setAlignment(Pos.CENTER);
         Label reflector = new Label("Reflector:");
@@ -359,6 +359,58 @@ public class Client extends Application{
         layout2.getChildren().addAll(reflector, comboBox, help);
 
         Label rotor = new Label("Rotor 1:");
+        HBox layout4 = rotor(rotor);
+
+
+        Label rotor22 = new Label("Rotor 2:");
+        HBox layout5 = rotor(rotor22);
+
+        Label rotor33 = new Label("Rotor 3:");
+        HBox layout6 = rotor(rotor33);
+
+        Label plugboard = new Label("Plugboard");
+        TextField plugboardInput = new TextField();
+
+        HBox layout8 = new HBox(20);
+        layout8.setAlignment(Pos.CENTER);
+        layout8.getChildren().addAll(plugboard, plugboardInput);
+
+        TextArea textArea = new TextArea();
+        textArea.setWrapText(true);
+
+        TextField link = new TextField();
+        Button url = new Button("Get Link");
+        url.setOnAction(e -> {
+            try {
+                String content = CipherTools.getUrl(link.getText());
+                textArea.appendText(content);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        HBox layout9 = new HBox(10);
+        layout9.setAlignment(Pos.CENTER);
+        layout9.getChildren().addAll(link, url);
+
+        Button back = new Button("Back");
+        back.setOnAction(e -> window.setScene(scene));
+        Button encode = new Button("Encode");
+        encode.setOnAction(e -> System.out.println("Encoding"));
+        Button decode = new Button("Cryptanalyze");
+        decode.setOnAction(e -> System.out.println("Decoding"));
+        HBox layout7 = new HBox(10);
+        layout7.setAlignment(Pos.CENTER);
+        layout7.getChildren().addAll(encode, decode, back);
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(20, 20, 20, 20));
+        layout.setAlignment(Pos.CENTER);
+        layout.getChildren().addAll(layout2, layout4, layout5, layout6, layout8, textArea, layout9, layout7 );
+        Scene scene2 = new Scene(layout, 800, 600);
+        window.setScene(scene2);
+    }
+
+    private static HBox rotor(Label rotor) {
         Label position = new Label("Position:");
         Label ring = new Label("Ring:");
 
@@ -380,78 +432,6 @@ public class Client extends Application{
         HBox layout4 = new HBox(50);
         layout4.setAlignment(Pos.CENTER);
         layout4.getChildren().addAll(rotor, rotor1, position, positionInput, ring, ringInput);
-
-        Label rotor22 = new Label("Rotor 2:");
-        Label position2 = new Label("Position:");
-        Label ring2 = new Label("Ring:");
-
-        ComboBox<String> rotor2 = new ComboBox<>();
-        rotor2.getItems().addAll(
-                "I",
-                "II",
-                "III",
-                "IV",
-                "V",
-                "VI",
-                "VII",
-                "VIII"
-        );
-
-        TextField positionInput2 = new TextField();
-        TextField ringInput2 = new TextField();
-
-
-        HBox layout5 = new HBox(50);
-        layout5.setAlignment(Pos.CENTER);
-        layout5.getChildren().addAll(rotor22, rotor2, position2, positionInput2, ring2, ringInput2);
-
-        Label rotor33 = new Label("Rotor 3:");
-        Label position3 = new Label("Position:");
-        Label ring3 = new Label("Ring:");
-        ComboBox<String> rotor3 = new ComboBox<>();
-        rotor3.getItems().addAll(
-                "I",
-                "II",
-                "III",
-                "IV",
-                "V",
-                "VI",
-                "VII",
-                "VIII"
-        );
-
-        TextField positionInput3 = new TextField();
-        TextField ringInput3 = new TextField();
-
-        HBox layout6 = new HBox(50);
-        layout6.setAlignment(Pos.CENTER);
-        layout6.getChildren().addAll(rotor33, rotor3, position3, positionInput3, ring3, ringInput3);
-
-        Label plugboard = new Label("Plugboard");
-        TextField plugboardInput = new TextField();
-
-        HBox layout8 = new HBox(20);
-        layout8.setAlignment(Pos.CENTER);
-        layout8.getChildren().addAll(plugboard, plugboardInput);
-
-        TextArea textArea = new TextArea();
-        textArea.setWrapText(true);
-
-        Button back = new Button("Back");
-        back.setOnAction(e -> window.setScene(scene));
-        Button encode = new Button("Encode");
-        encode.setOnAction(e -> System.out.println("Encoding"));
-        Button decode = new Button("Cryptanalyze");
-        decode.setOnAction(e -> System.out.println("Decoding"));
-        HBox layout7 = new HBox(10);
-        layout7.setAlignment(Pos.CENTER);
-        layout7.getChildren().addAll(encode, decode, back);
-
-        VBox layout = new VBox(10);
-        layout.setPadding(new Insets(20, 20, 20, 20));
-        layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(layout2, layout4, layout5, layout6, layout8, textArea, layout7 );
-        Scene scene2 = new Scene(layout, 800, 600);
-        window.setScene(scene2);
+        return layout4;
     }
 } //end class Client
