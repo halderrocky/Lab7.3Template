@@ -311,7 +311,10 @@ public class Client extends Application{
         output.setPrefSize(300,200);
 
         Button back = new Button("Back");
-        back.setOnAction(e -> window.getScene());
+        back.setOnAction(e -> window.setScene(scene));
+
+        Button backToEnigma = new Button("Enigma");
+        backToEnigma.setOnAction(e -> window.setScene(scene3));
 
         Button file = new Button("Get File");
         file.setOnAction(e -> {
@@ -325,7 +328,7 @@ public class Client extends Application{
 
         HBox view = new HBox(10);
         view.setAlignment(Pos.CENTER);
-        view.getChildren().addAll(back, file);
+        view.getChildren().addAll(back, file, backToEnigma);
 
         layout4.setPadding(new Insets(50,50,50,50));
         layout4.setAlignment(Pos.CENTER);
