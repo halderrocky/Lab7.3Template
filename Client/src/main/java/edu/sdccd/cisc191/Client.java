@@ -468,11 +468,11 @@ public class Client extends Application{
         back.setOnAction(e -> window.setScene(scene));
         Button encode = new Button("Encode");
         encode.setOnAction(e -> {
-        /*    Enigma enigma = new Enigma(new int[]{CipherTools.romanToInteger(rotor1.getValue()),Integer.parseInt(positionInput.getText()),Integer.parseInt(ringInput.getText())},
+        Enigma enigma = new Enigma(new int[]{CipherTools.romanToInteger(rotor.getValue()),Integer.parseInt(positionInput.getText()),Integer.parseInt(ringInput.getText())},
                     new int[]{CipherTools.romanToInteger(rotor2.getValue()),Integer.parseInt(positionInput2.getText()),Integer.parseInt(ringInput2.getText())},
                     new int[]{CipherTools.romanToInteger(rotor3.getValue()),Integer.parseInt(positionInput3.getText()),Integer.parseInt(ringInput3.getText())}, comboBox.getValue(), plugboardInput.getText());
             outputText = enigma.encode(textArea.getText().toUpperCase().replaceAll("[^A-Z]", ""));
-            createSecondWindow();*/
+            createSecondWindow();
         });
         Button decode = new Button("Cryptanalyze");
         decode.setOnAction(e -> {
