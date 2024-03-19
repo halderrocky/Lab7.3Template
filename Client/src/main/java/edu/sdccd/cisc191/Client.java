@@ -194,9 +194,12 @@ public class Client extends Application{
         window.setScene(mainScene);
         window.show();
     }
-    /**************************************************************************
+    /**
      * Encodes the message based on the cipher selected
-     *************************************************************************/
+     * @param inputText the input message
+     * @param key the key to the cipher
+     * @param cipherType the type of cipher selected
+     */
     public static void encode(String inputText, String key, String cipherType) {
         switch(cipherType) {
             case "Hill Cipher":
@@ -249,9 +252,12 @@ public class Client extends Application{
                 break;
         }
     }
-    /**************************************************************************
+    /**
      * Decodes the message based off the cipher selected
-     *************************************************************************/
+     * @param inputText the input message
+     * @param key the key to the cipher
+     * @param cipherType the type of cipher selected
+     */
     public static void decode(String inputText, String key, String cipherType){
         switch (cipherType) {
             case "Hill Cipher":
@@ -308,17 +314,18 @@ public class Client extends Application{
                 break;
         }
     }
-    /**************************************************************************
+    /**
      * Displays output window
      * Back button will switch back to mainScene
-     *************************************************************************/
+     */
     public static void outputWindow() {
         createSecondWindow(mainScene);
     }
 
-    /**************************************************************************
+    /**
      * Displays output window
-     *************************************************************************/
+     * @param scene the scene the back button will go to
+     */
     private static void createSecondWindow(Scene scene) {
         Label result = new Label("Result:"); //re
         TextArea output = new TextArea(outputText);
@@ -353,16 +360,16 @@ public class Client extends Application{
         Scene outputScene = new Scene(layout4, 800, 600);
         window.setScene(outputScene);
     }
-    /**************************************************************************
+    /**
      * Displays output window
      * Back button will switch back to enigmaScene
-     *************************************************************************/
+     */
     public static void enigmaOutputWindow(){
         createSecondWindow(enigmaScene);
     }
-    /**************************************************************************
+    /**
      * Download outputText using FileChooser
-     *************************************************************************/
+     */
     public static void getOutputFile() throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
 
@@ -379,9 +386,10 @@ public class Client extends Application{
             pw.close();
         }
     }
-    /**************************************************************************
-     * Window for enigma cipher
-     *************************************************************************/
+
+    /**
+     * Creates a window for enigma cipher
+     */
     public static void enigmaWindow(){
         HBox layout2 = new HBox(20);
         layout2.setAlignment(Pos.CENTER);
