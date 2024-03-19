@@ -1,7 +1,16 @@
 package edu.sdccd.cisc191.ciphers;
 
+/**************************************************************************
+ * Morse code converter
+ * @author Giselle Mustafa
+ *************************************************************************/
 public class MorseCode {
     private static String[] code = {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--..", "|"};
+    /**************************************************************************
+     * Converts Morse Code to English Alphabet
+     * @param morCode The morse code text
+     * @return The english alphabet equivalent to the morse code
+     *************************************************************************/
     public static String morToEng(String morCode) {
         String[] arr = morCode.split(" ");
         StringBuilder outputText = new StringBuilder();
@@ -19,7 +28,11 @@ public class MorseCode {
         return outputText.toString();
     }
 
-    // Defines the engToMor method, also prints space
+    /**************************************************************************
+     * Converts english alphabet to morse code
+     * @param engLang The english alphabet text to be converted into Morse code
+     * @return The morse code equivalent to the english text
+     *************************************************************************/
     public static String engToMor(String engLang) {
         StringBuilder outputText = new StringBuilder();
         for (int i = 0; i < engLang.length(); i++) {

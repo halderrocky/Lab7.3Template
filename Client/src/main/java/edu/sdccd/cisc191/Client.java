@@ -12,6 +12,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.net.*;
 import java.io.*;
@@ -154,8 +156,8 @@ public class Client extends Application{
         Button url = new Button("Get Link");
         url.setOnAction(e -> {
             try {
-                String content = CipherTools.getUrl(link.getText());
-                messageInput.appendText(content);
+                String content = getUrl(link.getText());
+                textArea.appendText(content);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -510,8 +512,8 @@ public class Client extends Application{
         Button url = new Button("Get Link");
         url.setOnAction(e -> {
             try {
-                String content = CipherTools.getUrl(link.getText());
-                inputText.appendText(content);
+                String content = getUrl(link.getText());
+                textArea.appendText(content);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -554,5 +556,17 @@ public class Client extends Application{
         //shows scene
         enigmaScene = new Scene(layout, 800, 600);
         window.setScene(enigmaScene);
+    }
+
+    /**************************************************************************
+     * Gets URL of website
+     *************************************************************************/
+    public static String getUrl(String input){
+        try {
+            Document document = Jsoup.connect(input).get();
+            return document.text();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 } //end class Client
