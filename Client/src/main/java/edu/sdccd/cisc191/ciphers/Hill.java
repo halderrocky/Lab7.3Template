@@ -79,7 +79,7 @@ public class Hill extends CipherTools {
 /*        if(n==2)
             keyMatrix = bruteForce2x2();*/
 
-        keyMatrix = bruteForceNxN(n);
+        keyMatrix = bruteForce2x2();
 
         INPUT_TEXT = inputText;
         ALPHA_INPUT_TEXT = alphaInputText;
@@ -113,6 +113,9 @@ public class Hill extends CipherTools {
         return chiMatrix;
     }
 
+    /**************************************************************************
+     * Brute force of an NxN matrix using CPU threads currently
+     *************************************************************************/
     private static int[][] bruteForceNxN(int n) {
         int[][] matrix = new int[n][n];
         char[] cipherArr = ALPHA_INPUT_TEXT.toCharArray();

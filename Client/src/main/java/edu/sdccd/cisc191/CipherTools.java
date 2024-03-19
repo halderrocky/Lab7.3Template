@@ -53,6 +53,10 @@ public class CipherTools {
             chiSquared += (Math.pow((letterFrequency[(l+shift)%26] - (length*LETTER_FREQ[l])),2))/(LETTER_FREQ[l]*length);
         return chiSquared;
     }
+
+    /**************************************************************************
+     * Converts Roman Numerals up to 8 into an integer
+     *************************************************************************/
     public static int romanToInteger(String romanNumeral){
         int integer = 0;
         switch(romanNumeral){
@@ -82,14 +86,5 @@ public class CipherTools {
                 break;
         }
         return integer;
-    }
-
-    public static String getUrl(String input) throws Exception {
-        try {
-            Document document = Jsoup.connect(input).get();
-            return document.text();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

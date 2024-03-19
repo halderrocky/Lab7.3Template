@@ -15,14 +15,24 @@ public class EnigmaEngine extends CipherTools {
     private int numThreads = 4;
     protected ConcurrentHashMap<Integer, double[]> result = new ConcurrentHashMap<>();
 
+    /**************************************************************************
+     * Constructor without number of threads (default thread number)
+     *************************************************************************/
     public EnigmaEngine(String inputText) {
         this.inputText = inputText;
     }
+
+    /**************************************************************************
+     * Constructor with thread parameter to set number of threads to input
+     *************************************************************************/
     public EnigmaEngine(String inputText, int numThreads) {
         this.inputText = inputText;
         this.numThreads = numThreads;
     }
 
+    /**************************************************************************
+     * Main method, cryptanalyzes ciphertext
+     *************************************************************************/
     public String cryptanalyze() {
         int[] probableSettings = new int[9];
         Arrays.fill(probableSettings, 1);
@@ -35,6 +45,7 @@ public class EnigmaEngine extends CipherTools {
 
         System.out.println("Most Probable Reflector: " + reflectorType + "\n");
 
+        //Divides up all the work for the worker threads to handle
         double rotorIoC = 0;
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
         for(int i=1; i<=numThreads; i++) {
@@ -55,6 +66,7 @@ public class EnigmaEngine extends CipherTools {
             e.printStackTrace();
         }
 
+        //Finds result with highest IoC from all the threads
         for(int i=1; i<numThreads+1; i++) {
             if (result.getOrDefault(i,new double[7])[6] > rotorIoC) {
                 rotorIoC = result.get(i)[6];
@@ -65,6 +77,7 @@ public class EnigmaEngine extends CipherTools {
 
         System.out.println("\nMost Probable Rotor Order: \n" + Arrays.toString(Arrays.copyOfRange(probableSettings,0,3)) + "\n");
 
+        //Checks rotates through every ring setting for each rotor
         //Rotor 3 -- Fastest Rotor
         int rotorPos = probableSettings[5];
         for(int i=1; i<27; i++) {
@@ -93,6 +106,7 @@ public class EnigmaEngine extends CipherTools {
 
         System.out.println("Most Probable Rotor Settings [Rotor Order] [Initial Position] [Ring Setting]:\n" + Arrays.toString(probableSettings) + "\t" + maxIoC);
 
+        //Finds most likely plugboard values
         HashSet<Integer> pluggedLetters = new HashSet<>();
         String currentBoard = "";
         for(int iteration=0; iteration<10; iteration++){
@@ -103,7 +117,7 @@ public class EnigmaEngine extends CipherTools {
                     if(!pluggedLetters.contains(i) && !pluggedLetters.contains(j)) {
                         String plugboardPair = String.valueOf((char)(i + 'A')) + (char) (j + 'A');
                         Enigma enigma = new Enigma(new int[]{probableSettings[0], probableSettings[3], probableSettings[6]}, new int[]{probableSettings[1], probableSettings[4], probableSettings[7]}, new int[]{probableSettings[2], probableSettings[5], probableSettings[8]}, reflectorType, currentBoard + plugboardPair);
-                        double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));
+                        double IoC = findIndexOfCoincidence(inputText.length(), getLetterFrequency(enigma.encode(inputText)));  //TODO: Trigram Scoring
                         if (IoC > maxIoC) {
                             maxIoC = IoC;
                             bestPair = plugboardPair;
@@ -129,23 +143,34 @@ public class EnigmaEngine extends CipherTools {
         return enigma.encode(inputText);
     }
 
+    /**************************************************************************
+     * Worker thread for Enigma engine multithreading
+     *************************************************************************/
     class EnigmaWorker implements Runnable {
         private int[] workLoad;
 
+        /**************************************************************************
+         * Constructor with passed in work load for worker thread
+         *************************************************************************/
         public EnigmaWorker(int[] workLoad) {
             this.workLoad = workLoad;
         }
 
+        /**************************************************************************
+         * Main run method
+         *************************************************************************/
         @Override
         public void run() {
             String threadName = Thread.currentThread().getName();
             int threadNum = Integer.parseInt(threadName.substring(14));
 
+            //Goes through each iteration of the work load
             for (int iteration : workLoad) {
                 int[] probableSettings = new int[6];
                 double maxIoC = Double.MIN_VALUE;
                 double rotorIoC = 0;
 
+                //Creates current order based on iteration
                 int[] currentOrder = {1 + iteration / 25, 1 + (iteration / 5) % 5, 1 + iteration % 5};
                 if (iteration <= 125 && currentOrder[0] != currentOrder[1] && currentOrder[0] != currentOrder[2] && currentOrder[1] != currentOrder[2]) {
                     for (int i = 1; i < 27; i++) {
