@@ -566,6 +566,8 @@ public class Client extends Application{
 
     /**************************************************************************
      * Gets URL of website
+     * @param input URL inputted by user
+     * @return Text from the URL
      *************************************************************************/
     public static String getUrl(String input){
         try {
