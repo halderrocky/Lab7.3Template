@@ -88,7 +88,8 @@ public class Client extends Application{
                 "Affine Cipher",
                 "MD4 Hash",
                 "Enigma",
-                "Morse Code"
+                "Morse Code",
+                "Phonetic Cipher"
         );
 
         //Get Help Button
@@ -109,6 +110,12 @@ public class Client extends Application{
                     break;
                 case "Affine Cipher":
                     AlertBox.display("Affine Cipher","They key must be formatted as #,#");
+                    break;
+                case "Morse Code":
+                    AlertBox.display("Morse Code", "There is no key!");
+                    break;
+                case "Phonetic Cipher":
+                    AlertBox.display("Phonetic Cipher", "There is no key!");
                     break;
             }
         }
@@ -252,6 +259,10 @@ public class Client extends Application{
                 outputText = MorseCode.engToMor(inputText);
                 outputWindow();
                 break;
+            case "Phonetic Cipher":
+                outputText = Phonetic.printPhoneticEncoded(inputText);
+                outputWindow();
+                break;
         }
     }
     /**
@@ -312,6 +323,10 @@ public class Client extends Application{
                 break;
             case "Morse Code":
                 outputText = MorseCode.morToEng(inputText);
+                outputWindow();
+                break;
+            case "Phonetic Cipher":
+                outputText = Phonetic.printPhoneticDecoded(inputText);
                 outputWindow();
                 break;
         }
