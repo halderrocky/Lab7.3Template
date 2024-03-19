@@ -1,6 +1,5 @@
 package edu.sdccd.cisc191;
 
-import com.sun.security.ntlm.Server;
 import edu.sdccd.cisc191.ciphers.*;
 import edu.sdccd.cisc191.hashes.MD4;
 import edu.sdccd.cisc191.hashes.MD4Engine;
@@ -14,7 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.net.*;
 import java.io.*;
 import java.util.HashMap;
@@ -38,10 +36,10 @@ public class Client extends Application{
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    ComboBox<String> combobox;
-    private static TextArea textArea;
+    ComboBox<String> cipherList;
+    private static TextArea messageInput;
     private static Stage window;
-    private static Scene scene, scene2, scene3;
+    private static Scene mainScene, outputScene, enigmaScene, engimaOutputScene;
     private static String outputText;
 
     public void startConnection(String ip, int port) throws IOException {
@@ -78,8 +76,8 @@ public class Client extends Application{
         window.setTitle("Decode");
 
         //list of Ciphers
-        combobox = new ComboBox<>();
-        combobox.getItems().addAll(
+        cipherList = new ComboBox<>();
+        cipherList.getItems().addAll(
                 "Hill Cipher",
                 "Caesar Cipher",
                 "Vigenere Cipher",
@@ -89,13 +87,11 @@ public class Client extends Application{
                 "Enigma",
                 "Morse Code"
         );
-        //listen for selection changes
-
 
         //Get Help Button
         Button help = new Button("Help");
         help.setOnAction(e -> {
-            switch (combobox.getValue()) {
+            switch (cipherList.getValue()) {
                 case "Hill Cipher":
                     AlertBox.display("Hill Cipher", "The key must be a word or series of letters");
                     break;
@@ -119,17 +115,17 @@ public class Client extends Application{
         Label label = new Label("Enter key:");
 
         //text input
-        TextField input = new TextField();
+        TextField key = new TextField();
 
-        //Text Area
-        textArea = new TextArea();
-        textArea.setWrapText(true);
+        //Text Area for message input
+        messageInput = new TextArea();
+        messageInput.setWrapText(true);
 
         //Decode/encode button
         Button encode = new Button("Encode");
-        encode.setOnAction(e -> Client.encode(textArea.getText(), input.getText(), combobox.getValue()));
+        encode.setOnAction(e -> Client.encode(messageInput.getText(), key.getText(), cipherList.getValue()));
         Button decode = new Button("Decode");
-        decode.setOnAction(e -> Client.decode(textArea.getText(), input.getText(), combobox.getValue()));
+        decode.setOnAction(e -> Client.decode(messageInput.getText(), key.getText(), cipherList.getValue()));
 
         //Import File Button
         Button files = new Button("Select File");
@@ -142,7 +138,7 @@ public class Client extends Application{
                 try{
                     Scanner scanner = new Scanner(selectedFile);
                     while(scanner.hasNextLine()){
-                        textArea.appendText(scanner.nextLine());
+                        messageInput.appendText(scanner.nextLine());
                     }
                 }catch (FileNotFoundException f){
                     f.getMessage();
@@ -158,67 +154,74 @@ public class Client extends Application{
         url.setOnAction(e -> {
             try {
                 String content = CipherTools.getUrl(link.getText());
-                textArea.appendText(content);
+                messageInput.appendText(content);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
+        //layout for getting the link
         HBox layout4 = new HBox(10);
         layout4.setAlignment(Pos.CENTER);
         layout4.getChildren().addAll(link, url);
 
-        //layout
+        //layout for key and the cipher list
         HBox layout2 = new HBox(10);
-        layout2.getChildren().addAll(input, combobox, help);
+        layout2.getChildren().addAll(key, cipherList, help);
         layout2.setAlignment(Pos.CENTER);
+
+        //layout for encode and decode buttons
         HBox layout3 = new HBox(10);
         layout3.setAlignment(Pos.CENTER);
         layout3.getChildren().addAll(encode, decode);
+        //final layout for all layouts
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(label, layout2, layout3, textArea, files, layout4);
+        layout.getChildren().addAll(label, layout2, layout3, messageInput, files, layout4);
 
-
-        combobox.setOnAction(e -> {
-            switch(combobox.getValue()){
+        //listens for enigma selection and sets scene to enigmaWindow
+        cipherList.setOnAction(e -> {
+            switch(cipherList.getValue()){
                 case "Enigma":
                     enigmaWindow();
                     break;
             }
         });
 
-        scene = new Scene(layout, 800,600);
-        window.setScene(scene);
+        //shows the scene
+        mainScene = new Scene(layout, 800,600);
+        window.setScene(mainScene);
         window.show();
     }
-
+    /**************************************************************************
+     * Encodes the message based on the cipher selected
+     *************************************************************************/
     public static void encode(String inputText, String key, String cipherType) {
         switch(cipherType) {
             case "Hill Cipher":
                 outputText = Hill.encode(inputText, key);
-                createSecondWindow();
+                outputWindow();
                 break;
             case "Caesar Cipher":
                 try {
                     outputText = Caesar.encode(inputText, key);
-                    createSecondWindow();
+                    outputWindow();
                 } catch (NumberFormatException e) {
                     AlertBox.display("Error", "ERROR!\nThe key must be a number");
                 }
                 break;
             case "Vigenere Cipher":
                 outputText = Vigenere.encode(inputText, key);
-                createSecondWindow();
+                outputWindow();
                 break;
             case "Atbash Cipher":
                 outputText = Atbash.encrypt(inputText);
-                createSecondWindow();
+                outputWindow();
                 break;
             case "Affine Cipher":
                 try{
                     outputText = Affine.encode(inputText, key);
-                    createSecondWindow();
+                    outputWindow();
                     break;
                 } catch (Exception e) {
                     AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
@@ -237,41 +240,43 @@ public class Client extends Application{
                 } else {
                     outputText = md4.hashAsString(inputText);
                 }
-                createSecondWindow();
+                outputWindow();
                 break;
             case "Morse Code":
                 outputText = MorseCode.engToMor(inputText);
-                createSecondWindow();
+                outputWindow();
                 break;
         }
     }
-
+    /**************************************************************************
+     * Decodes the message based off the cipher selected
+     *************************************************************************/
     public static void decode(String inputText, String key, String cipherType){
         switch (cipherType) {
             case "Hill Cipher":
                 outputText = Hill.decode(inputText, key);
-                createSecondWindow();
+                outputWindow();
                 break;
             case "Caesar Cipher":
                 try {
                     outputText = Caesar.decode(inputText, key);
-                    createSecondWindow();
+                    outputWindow();
                 } catch (NumberFormatException e) {
                     AlertBox.display("Error", "ERROR!\nThe key must be a number");
                 }
                 break;
             case "Vigenere Cipher":
                 outputText = Vigenere.decode(inputText, key);
-                createSecondWindow();
+                outputWindow();
                 break;
             case "Atbash Cipher":
                 outputText = Atbash.decrypt(inputText);
-                createSecondWindow();
+                outputWindow();
                 break;
             case "Affine Cipher":
                 try{
                     outputText = Affine.decode(inputText, key);
-                    createSecondWindow();
+                    outputWindow();
                     break;
                 } catch(Exception e){
                     AlertBox.display("Error", "ERROR!\nInput must be #,#\nThe first number must not be even or a multiple of 13");
@@ -294,28 +299,36 @@ public class Client extends Application{
                     output.append(str).append(" --> ").append(crackedPasswords.get(str)).append("\n");
                 }
                 outputText = output.toString();
-                createSecondWindow();
+                outputWindow();
                 break;
             case "Morse Code":
                 outputText = MorseCode.morToEng(inputText);
-                createSecondWindow();
+                outputWindow();
                 break;
         }
     }
+    /**************************************************************************
+     * Displays output window
+     * Back button will switch back to mainScene
+     *************************************************************************/
+    public static void outputWindow() {
+        createSecondWindow(mainScene);
+    }
 
-    public static void createSecondWindow() {
-        Label answer = new Label("Result:");
-        VBox layout4 = new VBox(10);
+    /**************************************************************************
+     * Displays output window
+     *************************************************************************/
+    private static void createSecondWindow(Scene scene) {
+        Label result = new Label("Result:"); //re
         TextArea output = new TextArea(outputText);
         output.setWrapText(true);
         output.setPrefSize(300,200);
 
+        //back button to change scene to previous scene
         Button back = new Button("Back");
         back.setOnAction(e -> window.setScene(scene));
 
-        Button backToEnigma = new Button("Enigma");
-        backToEnigma.setOnAction(e -> window.setScene(scene3));
-
+        //Calls upon getOutputFile to download output file
         Button file = new Button("Get File");
         file.setOnAction(e -> {
             try {
@@ -326,17 +339,29 @@ public class Client extends Application{
             }
         });
 
+        //layout for the back button and Get File button
         HBox view = new HBox(10);
         view.setAlignment(Pos.CENTER);
-        view.getChildren().addAll(back, file, backToEnigma);
+        view.getChildren().addAll(back, file);
 
+        //final layout for all layouts in scene
+        VBox layout4 = new VBox(10);
         layout4.setPadding(new Insets(50,50,50,50));
         layout4.setAlignment(Pos.CENTER);
-        layout4.getChildren().addAll(answer, output, view);
-        scene2 = new Scene(layout4, 800, 600);
-        window.setScene(scene2);
+        layout4.getChildren().addAll(result, output, view);
+        outputScene = new Scene(layout4, 800, 600);
+        window.setScene(outputScene);
     }
-
+    /**************************************************************************
+     * Displays output window
+     * Back button will switch back to enigmaScene
+     *************************************************************************/
+    public static void enigmaOutputWindow(){
+        createSecondWindow(enigmaScene);
+    }
+    /**************************************************************************
+     * Download outputText using FileChooser
+     *************************************************************************/
     public static void getOutputFile() throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
 
@@ -353,27 +378,36 @@ public class Client extends Application{
             pw.close();
         }
     }
+    /**************************************************************************
+     * Window for enigma cipher
+     *************************************************************************/
     public static void enigmaWindow(){
         HBox layout2 = new HBox(20);
         layout2.setAlignment(Pos.CENTER);
-        Label reflector = new Label("Reflector:");
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll(
+
+        //reflector label & reflector comboBox
+        Label reflectorLabel = new Label("Reflector:");
+        ComboBox<String> reflector = new ComboBox<>();
+        reflector.getItems().addAll(
                 "UKW B",
                 "UKW C"
         );
 
+        //help button
         Button help = new Button("Help");
         help.setOnAction(e -> {
             AlertBox.display("Help", "Position and Ring must be a number from 1-26" +
                     "\nPlugboard must be pairs of unique letters (can't repeat the same letter)");
         });
-        layout2.getChildren().addAll(reflector, comboBox, help);
+        //layout for reflector label & combobox and help button
+        layout2.getChildren().addAll(reflectorLabel, reflector, help);
 
+        //rotor + positon + ring label
         Label rotorLabel = new Label("Rotor 1:");
         Label positionLabel = new Label("Position:");
         Label ringLabel = new Label("Ring:");
 
+        //Combobox for all rotor options
         ComboBox<String> rotor = new ComboBox<>();
         rotor.getItems().addAll(
                 "I",
@@ -386,18 +420,21 @@ public class Client extends Application{
                 "VIII"
         );
 
+        //TextFields for position and ring input
         TextField positionInput = new TextField();
         TextField ringInput = new TextField();
 
+        //layout for first rotor, position, and ring inputs
         HBox layout4 = new HBox(50);
         layout4.setAlignment(Pos.CENTER);
         layout4.getChildren().addAll(rotorLabel, rotor, positionLabel, positionInput, ringLabel, ringInput);
 
-
+        //rotor + positon + ring label
         Label rotorLabel2 = new Label("Rotor 2:");
         Label positionLabel2 = new Label("Position:");
         Label ringLabel2 = new Label("Ring:");
 
+        //Combobox for all rotor options
         ComboBox<String> rotor2 = new ComboBox<>();
         rotor2.getItems().addAll(
                 "I",
@@ -410,17 +447,21 @@ public class Client extends Application{
                 "VIII"
         );
 
+        //TextFields for position and ring input
         TextField positionInput2 = new TextField();
         TextField ringInput2 = new TextField();
 
+        //layout for second rotor, position, and ring inputs
         HBox layout5 = new HBox(50);
         layout5.setAlignment(Pos.CENTER);
         layout5.getChildren().addAll(rotorLabel2, rotor2, positionLabel2, positionInput2, ringLabel2, ringInput2);
 
+        //rotor + positon + ring label
         Label rotorLabel3 = new Label("Rotor 3:");
         Label positionLabel3 = new Label("Position:");
         Label ringLabel3 = new Label("Ring:");
 
+        //Combobox for all rotor options
         ComboBox<String> rotor3 = new ComboBox<>();
         rotor3.getItems().addAll(
                 "I",
@@ -433,62 +474,76 @@ public class Client extends Application{
                 "VIII"
         );
 
+        //TextFields for position and ring input
         TextField positionInput3 = new TextField();
         TextField ringInput3 = new TextField();
 
+        //layout for third rotor, position, and ring inputs
         HBox layout6 = new HBox(50);
         layout6.setAlignment(Pos.CENTER);
         layout6.getChildren().addAll(rotorLabel3, rotor3, positionLabel3, positionInput3, ringLabel3, ringInput3);
 
+        //plugboard TextField Input
         Label plugboard = new Label("Plugboard");
         TextField plugboardInput = new TextField();
 
+        //layout for plugboard input and label
         HBox layout8 = new HBox(20);
         layout8.setAlignment(Pos.CENTER);
         layout8.getChildren().addAll(plugboard, plugboardInput);
 
-        TextArea textArea = new TextArea();
-        textArea.setWrapText(true);
+        //TextArea for input message
+        TextArea inputText = new TextArea();
+        inputText.setWrapText(true);
 
+        //TextField for user to input link
         TextField link = new TextField();
         Button url = new Button("Get Link");
         url.setOnAction(e -> {
             try {
                 String content = CipherTools.getUrl(link.getText());
-                textArea.appendText(content);
+                inputText.appendText(content);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
+
+        //layout for getting link
         HBox layout9 = new HBox(10);
         layout9.setAlignment(Pos.CENTER);
         layout9.getChildren().addAll(link, url);
 
+        //buttons for back to mainScene, encode, cryptanalyze
         Button back = new Button("Back");
-        back.setOnAction(e -> window.setScene(scene));
+        back.setOnAction(e -> window.setScene(mainScene));
         Button encode = new Button("Encode");
         encode.setOnAction(e -> {
         Enigma enigma = new Enigma(new int[]{CipherTools.romanToInteger(rotor.getValue()),Integer.parseInt(positionInput.getText()),Integer.parseInt(ringInput.getText())},
                     new int[]{CipherTools.romanToInteger(rotor2.getValue()),Integer.parseInt(positionInput2.getText()),Integer.parseInt(ringInput2.getText())},
-                    new int[]{CipherTools.romanToInteger(rotor3.getValue()),Integer.parseInt(positionInput3.getText()),Integer.parseInt(ringInput3.getText())}, comboBox.getValue(), plugboardInput.getText());
-            outputText = enigma.encode(textArea.getText().toUpperCase().replaceAll("[^A-Z]", ""));
-            createSecondWindow();
+                    new int[]{CipherTools.romanToInteger(rotor3.getValue()),Integer.parseInt(positionInput3.getText()),Integer.parseInt(ringInput3.getText())}, reflector.getValue(), plugboardInput.getText());
+            outputText = enigma.encode(inputText.getText().toUpperCase().replaceAll("[^A-Z]", ""));
+            enigmaOutputWindow();
         });
         Button decode = new Button("Cryptanalyze");
         decode.setOnAction(e -> {
-            EnigmaEngine engine = new EnigmaEngine(textArea.getText().toUpperCase().replaceAll("[^A-Z]", ""));
+            EnigmaEngine engine = new EnigmaEngine(inputText.getText().toUpperCase().replaceAll("[^A-Z]", ""));
             outputText = engine.cryptanalyze();
-            createSecondWindow();
+            enigmaOutputWindow();
         });
+
+        //layout for encode, cryptanalyze, back button
         HBox layout7 = new HBox(10);
         layout7.setAlignment(Pos.CENTER);
         layout7.getChildren().addAll(encode, decode, back);
 
+        //final layout for all layouts in scene
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setAlignment(Pos.CENTER);
-        layout.getChildren().addAll(layout2, layout4, layout5, layout6, layout8, textArea, layout9, layout7 );
-        scene3 = new Scene(layout, 800, 600);
-        window.setScene(scene3);
+        layout.getChildren().addAll(layout2, layout4, layout5, layout6, layout8, inputText, layout9, layout7 );
+
+        //shows scene
+        enigmaScene = new Scene(layout, 800, 600);
+        window.setScene(enigmaScene);
     }
 } //end class Client
