@@ -7,48 +7,22 @@ import java.util.Map;
  * Phonetic Cipher
  */
 public class Phonetic {
+    //Making new map, sets A to Alpha... Z to Zulu
+    private static final String[] alphabetConversion = {"Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India", "Juliet", "Kilo", "Lima", "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo", "Sierra", "Tango", "Uniform", "Victor", "Whiskey", "X-ray", "Yankee", "Zulu"};
+
     /**
      * Encodes message
      * @param phoneticEncodeTestString message input by user
      * @return the encoded string
      */
     public static String printPhoneticEncoded(String phoneticEncodeTestString) {
-        //Making new map, sets A to Alpha... Z to Zulu
-        Map<Character, String> phoneticEncodeMap = new HashMap<>();
-        phoneticEncodeMap.put('A', "Alpha");
-        phoneticEncodeMap.put('B', "Bravo");
-        phoneticEncodeMap.put('C', "Charlie");
-        phoneticEncodeMap.put('D', "Delta");
-        phoneticEncodeMap.put('E', "Echo");
-        phoneticEncodeMap.put('F', "Foxtrot");
-        phoneticEncodeMap.put('G', "Golf");
-        phoneticEncodeMap.put('H', "Hotel");
-        phoneticEncodeMap.put('I', "India");
-        phoneticEncodeMap.put('J', "Juliet");
-        phoneticEncodeMap.put('K', "Kilo");
-        phoneticEncodeMap.put('L', "Lima");
-        phoneticEncodeMap.put('M', "Mike");
-        phoneticEncodeMap.put('N', "November");
-        phoneticEncodeMap.put('O', "Oscar");
-        phoneticEncodeMap.put('P', "Papa");
-        phoneticEncodeMap.put('Q', "Quebec");
-        phoneticEncodeMap.put('R', "Romeo");
-        phoneticEncodeMap.put('S', "Sierra");
-        phoneticEncodeMap.put('T', "Tango");
-        phoneticEncodeMap.put('U', "Uniform");
-        phoneticEncodeMap.put('V', "Victor");
-        phoneticEncodeMap.put('W', "Whiskey");
-        phoneticEncodeMap.put('X', "X-ray");
-        phoneticEncodeMap.put('Y', "Yankee");
-        phoneticEncodeMap.put('Z', "Zulu");
-//======================================================================================================//
         // StringBuilder to store the encoded string, this is our sentence frame
         StringBuilder phoneticEncodedString = new StringBuilder();
         //abc -> A|B|C, encodes each letter
         //---
         for (char phoneticEncodeLetter : phoneticEncodeTestString.toUpperCase().toCharArray()) {
             if (Character.isLetter(phoneticEncodeLetter)) {
-                phoneticEncodedString.append(phoneticEncodeMap.getOrDefault(phoneticEncodeLetter, ""));
+                phoneticEncodedString.append(alphabetConversion[phoneticEncodeLetter-'A']);
                 phoneticEncodedString.append(" ");
             } else {
                 phoneticEncodedString.append(phoneticEncodeLetter); //If character isn't a letter, just leave it be
@@ -65,43 +39,20 @@ public class Phonetic {
      * @return the decoded message
      */
     public static String printPhoneticDecoded(String phoneticDecodeTestString) {
-        //Making new map, Alpha to A... Zulu to Z
-        Map<String, Character> phoneticDecodeMap = new HashMap<>();
-        phoneticDecodeMap.put("Alpha", 'A');
-        phoneticDecodeMap.put("Bravo", 'B');
-        phoneticDecodeMap.put("Charlie", 'C');
-        phoneticDecodeMap.put("Delta", 'D');
-        phoneticDecodeMap.put("Echo", 'E');
-        phoneticDecodeMap.put("Foxtrot", 'F');
-        phoneticDecodeMap.put("Golf", 'G');
-        phoneticDecodeMap.put("Hotel", 'H');
-        phoneticDecodeMap.put("India", 'I');
-        phoneticDecodeMap.put("Juliet", 'J');
-        phoneticDecodeMap.put("Kilo", 'K');
-        phoneticDecodeMap.put("Lima", 'L');
-        phoneticDecodeMap.put("Mike", 'M');
-        phoneticDecodeMap.put("November", 'N');
-        phoneticDecodeMap.put("Oscar", 'O');
-        phoneticDecodeMap.put("Papa", 'P');
-        phoneticDecodeMap.put("Quebec", 'Q');
-        phoneticDecodeMap.put("Romeo", 'R');
-        phoneticDecodeMap.put("Sierra", 'S');
-        phoneticDecodeMap.put("Tango", 'T');
-        phoneticDecodeMap.put("Uniform", 'U');
-        phoneticDecodeMap.put("Victor", 'V');
-        phoneticDecodeMap.put("Whiskey", 'W');
-        phoneticDecodeMap.put("X-ray", 'X');
-        phoneticDecodeMap.put("Yankee", 'Y');
-        phoneticDecodeMap.put("Zulu", 'Z');
-//======================================================================================================//
         // StringBuilder to store the decoded string, this is our sentence frame
         StringBuilder phoneticDecodedString = new StringBuilder();
         // Split the encoded string for every space
         String[] phoneticDecodeWords = phoneticDecodeTestString.split(" ");
         //---
         for (String phoneticDecodeWord : phoneticDecodeWords) {
-            if (phoneticDecodeMap.containsKey(phoneticDecodeWord)) {
-                phoneticDecodedString.append(phoneticDecodeMap.get(phoneticDecodeWord));
+            int index = -1;
+            for(int i=0; i<26; i++) {
+                if(phoneticDecodeWord.equalsIgnoreCase(alphabetConversion[i]))
+                    index = i;
+            }
+
+            if (index>=0) {
+                phoneticDecodedString.append((char) ('A' + index));
 
             } else {
                 // If the word isn't one of the words in the map, then leave it be
