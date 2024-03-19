@@ -440,10 +440,7 @@ public class Client extends Application{
                 "II",
                 "III",
                 "IV",
-                "V",
-                "VI",
-                "VII",
-                "VIII"
+                "V"
         );
 
         //TextFields for position and ring input
@@ -467,10 +464,7 @@ public class Client extends Application{
                 "II",
                 "III",
                 "IV",
-                "V",
-                "VI",
-                "VII",
-                "VIII"
+                "V"
         );
 
         //TextFields for position and ring input
@@ -494,10 +488,7 @@ public class Client extends Application{
                 "II",
                 "III",
                 "IV",
-                "V",
-                "VI",
-                "VII",
-                "VIII"
+                "V"
         );
 
         //TextFields for position and ring input
