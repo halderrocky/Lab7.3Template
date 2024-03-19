@@ -4,6 +4,10 @@ import edu.sdccd.cisc191.CipherTools;
 
 import java.util.HashMap;
 
+/**************************************************************************
+ * Enigma Machine cipher
+ * @author Oliver Tran
+ *************************************************************************/
 public class Enigma extends CipherTools{
     //Sets reflector values (input letter as index, output letter as value)
     private static final int[] UKWB = {24,17,20,7,16,18,11,3,15,23,13,6,14,10,12,8,4,1,5,25,2,22,21,9,0,19};
@@ -17,6 +21,11 @@ public class Enigma extends CipherTools{
 
     /**************************************************************************
      * Constructor setting enigma machine settings
+     * @param rotor1 Type and settings of the leftmost rotor
+     * @param rotor2 Type and settings of the middle rotor
+     * @param rotor3 Type and settings of the rightmost rotor
+     * @param reflectorType The type of reflector used
+     * @param letterPairs The pairs of letters from the plugboard seperated by a space
      *************************************************************************/
     public Enigma (int[] rotor1, int[] rotor2, int[] rotor3, String reflectorType, String letterPairs) {
         this.rotor1 = new Rotor(rotor1[0], rotor1[1], rotor1[2]);
@@ -31,6 +40,8 @@ public class Enigma extends CipherTools{
 
     /**************************************************************************
      * Encrypts plain text using the object's rotor settings
+     * @param inputText Text to encode/decode (symmetric cipher)
+     * @return The text encoded/decoded by the Enigma cipher
      *************************************************************************/
     public String encode (String inputText) {
         int[] rotorPositions = {rotor1.getRotorPosition(), rotor2.getRotorPosition(), rotor3.getRotorPosition()};
@@ -59,7 +70,7 @@ public class Enigma extends CipherTools{
     /**************************************************************************
      * Passes the plaintext letter through each of the rotors and the reflector
      *************************************************************************/
-    public char enigmaTransform (char c) {
+    private char enigmaTransform (char c) {
         int l = c-'A';
 
         l = rotor3.transform(l);
@@ -109,7 +120,7 @@ public class Enigma extends CipherTools{
          * Rotor constructor given rotor type (determines substitutions), initial
          * position, and the ring setting
          *************************************************************************/
-        public Rotor(int rotorType, int rotorPosition, int ringSetting) {
+        private Rotor(int rotorType, int rotorPosition, int ringSetting) {
             this.rotorPosition = rotorPosition-1;
             switch(rotorType) {
                 case 1:

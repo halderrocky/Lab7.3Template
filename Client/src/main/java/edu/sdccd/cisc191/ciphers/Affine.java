@@ -4,9 +4,16 @@ import edu.sdccd.cisc191.AlertBox;
 
 import java.util.StringTokenizer;
 
+/**************************************************************************
+ * Affine cipher encryption and decryption
+ * @author Vinh Tong
+ *************************************************************************/
 public class Affine {
     /**************************************************************************
      * Encrypts plain text using an Affine Cipher given a slope and an intercept
+     * @param inputText The plaintext to encrypt
+     * @param key The slope and intercept to encrypt with
+     * @return The encrypted ciphertext
      *************************************************************************/
     public static String encode(String inputText, String key) {
         //Separates key into two inputs (m,b)
@@ -30,6 +37,9 @@ public class Affine {
 
     /**************************************************************************
      * Decodes plain text using an Affine Cipher given the encryption slope and intercept
+     * @param inputText The ciphertext to decrypt
+     * @param key The slope and intercept the message was encrypted with
+     * @return The decrypted plaintext
      *************************************************************************/
     public static String decode(String inputText, String key) {
         StringTokenizer newKey = new StringTokenizer(key, ",");

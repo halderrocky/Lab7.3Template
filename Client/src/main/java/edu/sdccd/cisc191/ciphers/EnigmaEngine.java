@@ -9,6 +9,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**************************************************************************
+ * Engine to crack the Enigma Cipher (Segmented bruteforce using Index of Coincidence)
+ * @author Oliver Tran
+ *************************************************************************/
 public class EnigmaEngine extends CipherTools {
     private String inputText;
     private String reflectorType = "UKW B";
@@ -16,7 +20,8 @@ public class EnigmaEngine extends CipherTools {
     protected ConcurrentHashMap<Integer, double[]> result = new ConcurrentHashMap<>();
 
     /**************************************************************************
-     * Constructor without number of threads (default thread number)
+     * Constructor without number of threads (runs with default thread number)
+     * @param inputText The ciphertext to crack
      *************************************************************************/
     public EnigmaEngine(String inputText) {
         this.inputText = inputText;
@@ -24,6 +29,8 @@ public class EnigmaEngine extends CipherTools {
 
     /**************************************************************************
      * Constructor with thread parameter to set number of threads to input
+     * @param inputText The ciphertext to crack
+     * @param numThreads The number of CPU threads to allocate
      *************************************************************************/
     public EnigmaEngine(String inputText, int numThreads) {
         this.inputText = inputText;
@@ -32,6 +39,7 @@ public class EnigmaEngine extends CipherTools {
 
     /**************************************************************************
      * Main method, cryptanalyzes ciphertext
+     * @return Cracked String
      *************************************************************************/
     public String cryptanalyze() {
         int[] probableSettings = new int[9];
@@ -146,18 +154,19 @@ public class EnigmaEngine extends CipherTools {
     /**************************************************************************
      * Worker thread for Enigma engine multithreading
      *************************************************************************/
-    class EnigmaWorker implements Runnable {
+    private class EnigmaWorker implements Runnable {
         private int[] workLoad;
 
         /**************************************************************************
-         * Constructor with passed in work load for worker thread
+         * Constructor
+         * @param workLoad The divided work load for the worker thread to execute
          *************************************************************************/
         public EnigmaWorker(int[] workLoad) {
             this.workLoad = workLoad;
         }
 
         /**************************************************************************
-         * Main run method
+         * Brute forces the rotor settings and stores most probable settings
          *************************************************************************/
         @Override
         public void run() {

@@ -5,6 +5,10 @@ import edu.sdccd.cisc191.CipherTools;
 
 import java.util.Arrays;
 
+/**************************************************************************
+ * Hill Cipher encryption, decryption, and brute force
+ * @author Oliver Tran
+ *************************************************************************/
 public class Hill extends CipherTools {
     private static final int[] MULT_INVERSE= {1,0,9,0,21,0,15,0,3,0,19,0,0,0,7,0,23,0,11,0,5,0,17,0,25};
     private static String INPUT_TEXT,ALPHA_INPUT_TEXT;
@@ -12,6 +16,9 @@ public class Hill extends CipherTools {
 
     /**************************************************************************
      * Encrypts plain text using a Hill Cipher given a key word
+     * @param inputText Plaintext to encrypt
+     * @param key Keyword to encrypt plaintext with
+     * @return The encrypted ciphertext
      *************************************************************************/
     public static String encode(String inputText, String key) {
         //Removes all non alphabet characters and spaces
@@ -51,6 +58,9 @@ public class Hill extends CipherTools {
 
     /**************************************************************************
      * Decodes cipher text using a Hill Cipher given the encryption key
+     * @param inputText The ciphertext to decrypt
+     * @param key The keyword to invert and decrypt the message with
+     * @return The decrypted plaintext
      *************************************************************************/
     public static String decode(String inputText, String key){
         if(key.isEmpty())
@@ -66,6 +76,8 @@ public class Hill extends CipherTools {
 
     /**************************************************************************
      * Cryptanalysis of cipher (decryption without key)
+     * @param inputText The plaintext to encrypt
+     * @param n The dimension of the square matrix
      *************************************************************************/
     public static String cryptanlysis(String inputText, int n) {
         String alphaInputText = inputText.toUpperCase().replaceAll("[^A-Z]", "");
@@ -76,16 +88,19 @@ public class Hill extends CipherTools {
 
         int[][] keyMatrix = new int[n][n];
 
-/*        if(n==2)
-            keyMatrix = bruteForce2x2();*/
+        if(n==2)
+            keyMatrix = bruteForce2x2();
 
-        keyMatrix = bruteForce2x2();
+        //bruteForceNxN(n);
 
         INPUT_TEXT = inputText;
         ALPHA_INPUT_TEXT = alphaInputText;
         return transformText(keyMatrix);
     }
 
+    /**************************************************************************
+     * Brute forces a 2x2 using nested for loops
+     *************************************************************************/
     private static int[][] bruteForce2x2() {
         int[][] matrix;
         int[][] chiMatrix = new int[2][2];
@@ -114,7 +129,7 @@ public class Hill extends CipherTools {
     }
 
     /**************************************************************************
-     * Brute force of an NxN matrix using CPU threads currently
+     * Brute force of an NxN matrix using CPU threads currently WIP
      *************************************************************************/
     private static int[][] bruteForceNxN(int n) {
         int[][] matrix = new int[n][n];

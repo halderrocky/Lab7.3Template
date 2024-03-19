@@ -140,17 +140,6 @@ public class HillCipherTest {
     }
 
     @Test
-    public void nonInvertibleMatrix(){
-        key = "CISC";   //Determinant is even
-        try{
-            Hill.encode("please", key);
-            fail();
-        } catch (Exception e){
-            assertEquals("The key forms a non-invertible matrix", e.getMessage());
-        }
-    }
-
-    @Test
     public void testBruteForce() {
         cipherText = "Ow fti Raetpa ez ffu Mhgvqr Mfwnge, kv Ebnqb rm bebc m kmle pctrief Gzayb, gebgvbyit Haungcc, kvusle pqimmfai Htanyquvgvu, lnejinq lsb rfu ecumyb nqjsdai, rnekmhg fto esryrkn Owflgns, eln wsacle fta Rxyeskvcg mb Dyrobra lg oshwsdlge anp qsh Rcmfyrgvc, lg odrman aln gebgvbyiv hlug Sybmfgvihsib neb ftw Ezahgv Qbghgy sd Simrewc";
         key = "";

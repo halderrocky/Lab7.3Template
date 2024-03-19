@@ -10,6 +10,9 @@ public class MD4 {
     private int[] buffer = new int[4];
     private byte[] messageBytes;
 
+    /**************************************************************************
+     * Empty constructor (WIP with feature/gpu-computation
+     *************************************************************************/
     public MD4() {
 
     }
@@ -21,6 +24,11 @@ public class MD4 {
         buffer[3] = 0x10325476;
     }
 
+    /**************************************************************************
+     * Runs hash but converts the hash into a hexadecimal string and returns it
+     * @param inputText The plaintext to hash
+     * @return The hashed message as a hexadecimal string
+     *************************************************************************/
     public String hashAsString(String inputText) {
             StringBuilder output = new StringBuilder();
             for(byte b : runDigest(inputText)) {
@@ -29,6 +37,11 @@ public class MD4 {
             return output.toString();
     }
 
+    /**************************************************************************
+     * Runs the MD4 digest function transforming message into 128 bit message
+     * @param inputText The plaintext to hash
+     * @return The hashed message bytes
+     *************************************************************************/
     public byte[] runDigest(String inputText) {
         initializeBuffer();
 

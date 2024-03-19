@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**************************************************************************
+ * Engine to bruteforce MD4 Hashes
+ * @author Oliver Tran
+ *************************************************************************/
 public class MD4Engine {
     private char[][] format;
     private final ConcurrentHashMap<String, String> crackedPasswords = new ConcurrentHashMap<>();
@@ -14,6 +18,13 @@ public class MD4Engine {
     private final int NUM_THREADS;
     private AtomicLong progress = new AtomicLong();
 
+    /**************************************************************************
+     * Constructor
+     * @param inputHashes List of hashes to crack
+     * @param inFormatMap Map keying the format to its alphabet
+     * @param inFormat The format of the passwords to check for
+     * @param numThreads The number of threads to allocate
+     *************************************************************************/
     public MD4Engine(String[] inputHashes, HashMap<Character, char[]> inFormatMap, String inFormat, int numThreads) {
         NUM_THREADS = numThreads;
         hashBytes = new byte[inputHashes.length][];
@@ -22,7 +33,11 @@ public class MD4Engine {
         setFormat(inFormatMap, inFormat);
     }
 
+    /**************************************************************************
+     * Main method to run the MD4 crack
+     *************************************************************************/
     public void runMD4Crack() {
+        //Divides work for each of the worker threads
         ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
         for(int i=1; i<=NUM_THREADS; i++) {
             long workload = numCombs/NUM_THREADS;
@@ -41,14 +56,14 @@ public class MD4Engine {
         }
     }
 
-    public void setFormat(HashMap<Character, char[]> inFormatMap, String inFormat) {
+    private void setFormat(HashMap<Character, char[]> inFormatMap, String inFormat) {
         for(int i=0; i<format.length; i++) {
             format[i] = inFormatMap.get(inFormat.charAt(i));
             numCombs *= format[i].length;
         }
     }
 
-    public void hexToBytes(String[] hashList) {
+    private void hexToBytes(String[] hashList) {
         for(int i=0; i<hashList.length; i++) {
             int len = hashList[0].length();
             hashBytes[i] = new byte[len / 2];
@@ -59,12 +74,16 @@ public class MD4Engine {
         }
     }
 
+    /**************************************************************************
+     * Getter to get map of hashes to cracked hash message
+     * @return The map pairing hashes to its plaintext
+     *************************************************************************/
     public HashMap<String, String> getCrackedPasswords() {
         HashMap<String, String> ret = new HashMap<>(crackedPasswords);
         return ret;
     }
 
-    class MD4Worker implements Runnable {
+    private class MD4Worker implements Runnable {
         private final MD4 md4 = new MD4();
         private final long iterationStart;
         private final long iterationEnd;
@@ -92,6 +111,9 @@ public class MD4Engine {
             }
         }
 
+        /**************************************************************************
+         * Checks to see if the hash matches any of the passed hashes
+         *************************************************************************/
         private void checkHash(String plainText) {
             byte[] hash = md4.runDigest(plainText);
             for(byte[] hashByte : hashBytes) {
