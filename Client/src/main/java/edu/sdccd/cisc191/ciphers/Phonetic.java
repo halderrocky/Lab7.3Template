@@ -2,7 +2,16 @@ package edu.sdccd.cisc191.ciphers;
 
 import java.util.HashMap;
 import java.util.Map;
+
+/**
+ * Phonetic Cipher
+ */
 public class Phonetic {
+    /**
+     * Encodes message
+     * @param phoneticEncodeTestString message input by user
+     * @return the encoded string
+     */
     public static String printPhoneticEncoded(String phoneticEncodeTestString) {
         //Making new map, sets A to Alpha... Z to Zulu
         Map<Character, String> phoneticEncodeMap = new HashMap<>();
@@ -50,6 +59,11 @@ public class Phonetic {
     } //printPhoneticEncoded close
 //======================================================================================================//
 
+    /**
+     * Decodes message
+     * @param phoneticDecodeTestString the encoded message the user inputs
+     * @return the decoded message
+     */
     public static String printPhoneticDecoded(String phoneticDecodeTestString) {
         //Making new map, Alpha to A... Zulu to Z
         Map<String, Character> phoneticDecodeMap = new HashMap<>();
