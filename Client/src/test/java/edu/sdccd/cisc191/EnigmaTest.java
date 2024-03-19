@@ -40,7 +40,7 @@ public class EnigmaTest {
         Enigma enigma = new Enigma(new int[]{5,5,1}, new int[]{3,10,2}, new int[]{1,15,3}, "UKW B", "AB CD EF GH IJ KL MN");
         String cipherText = enigma.encode(plainText);
 
-        EnigmaEngine engine = new EnigmaEngine(cipherText);
+        EnigmaEngine engine = new EnigmaEngine(cipherText, 32);
         String output = engine.cryptanalyze();
 
         assertEquals(plainText, output);

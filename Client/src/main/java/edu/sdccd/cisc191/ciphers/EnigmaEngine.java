@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 public class EnigmaEngine extends CipherTools {
     private String inputText;
     private String reflectorType = "UKW B";
-    private int numThreads = 2;
-    protected ConcurrentHashMap<String, double[]> result = new ConcurrentHashMap<>();
+    private int numThreads = 4;
+    protected ConcurrentHashMap<Integer, double[]> result = new ConcurrentHashMap<>();
 
     public EnigmaEngine(String inputText) {
         this.inputText = inputText;
@@ -33,13 +33,15 @@ public class EnigmaEngine extends CipherTools {
         if(findIndexOfCoincidence(inputText.length(),getLetterFrequency(testReflectorB.encode(inputText))) < findIndexOfCoincidence(inputText.length(),getLetterFrequency(testReflectorC.encode(inputText))))
             reflectorType = 'C';*/
 
-        System.out.println("Most Probable Reflector: UKW " + reflectorType + "\n");
+        System.out.println("Most Probable Reflector: " + reflectorType + "\n");
 
         double rotorIoC = 0;
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
         for(int i=1; i<=numThreads; i++) {
-            long workload = 125/numThreads;
-            EnigmaWorker worker = new EnigmaWorker((int) workload * (i-1), (int) workload*i);
+            int[] workLoad = new int[125/numThreads + 1];
+            for(int j=0; j<workLoad.length; j++)
+                workLoad[j] = j*numThreads + i;
+            EnigmaWorker worker = new EnigmaWorker(workLoad);
             executor.execute(worker);
         }
 
@@ -54,11 +56,10 @@ public class EnigmaEngine extends CipherTools {
         }
 
         for(int i=1; i<numThreads+1; i++) {
-            String thread = "pool-1-thread-" + i;
-            if (result.get(thread)[5] > rotorIoC) {
-                rotorIoC = result.get(thread)[5];
+            if (result.getOrDefault(i,new double[7])[6] > rotorIoC) {
+                rotorIoC = result.get(i)[6];
                 for (int j = 0; j < 6; j++)
-                    probableSettings[j] = (int) result.get(thread)[j];
+                    probableSettings[j] = (int) result.get(i)[j];
             }
         }
 
@@ -129,24 +130,24 @@ public class EnigmaEngine extends CipherTools {
     }
 
     class EnigmaWorker implements Runnable {
-        private int start;
-        private int end;
+        private int[] workLoad;
 
-        public EnigmaWorker(int start, int end) {
-            this.start = start;
-            this.end = end;
+        public EnigmaWorker(int[] workLoad) {
+            this.workLoad = workLoad;
         }
 
         @Override
         public void run() {
-            String thread = Thread.currentThread().getName();
-            for (int iteration = start; iteration < end; iteration++) {
+            String threadName = Thread.currentThread().getName();
+            int threadNum = Integer.parseInt(threadName.substring(14));
+
+            for (int iteration : workLoad) {
                 int[] probableSettings = new int[6];
                 double maxIoC = Double.MIN_VALUE;
                 double rotorIoC = 0;
 
                 int[] currentOrder = {1 + iteration / 25, 1 + (iteration / 5) % 5, 1 + iteration % 5};
-                if (currentOrder[0] != currentOrder[1] && currentOrder[0] != currentOrder[2] && currentOrder[1] != currentOrder[2]) {
+                if (iteration <= 125 && currentOrder[0] != currentOrder[1] && currentOrder[0] != currentOrder[2] && currentOrder[1] != currentOrder[2]) {
                     for (int i = 1; i < 27; i++) {
                         for (int j = 1; j < 27; j++) {
                             for (int k = 1; k < 27; k++) {
@@ -167,12 +168,12 @@ public class EnigmaEngine extends CipherTools {
                     ret[i] = probableSettings[i];
 
                 double max = 0;
-                if (result.containsKey(thread))
-                    max = result.get(thread)[6];
+                if (result.containsKey(threadNum))
+                    max = result.get(threadNum)[6];
 
                 if (maxIoC > max) {
                     ret[6] = maxIoC;
-                    result.put(thread, ret);
+                    result.put(threadNum, ret);
                 }
             }
         }
