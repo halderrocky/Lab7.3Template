@@ -39,7 +39,8 @@ public class Client extends Application{
     ComboBox<String> cipherList;
     private static TextArea messageInput;
     private static Stage window;
-    private static Scene mainScene, outputScene, enigmaScene, engimaOutputScene;
+    private static Scene mainScene;
+    private static Scene enigmaScene;
     private static String outputText;
 
     public void startConnection(String ip, int port) throws IOException {
@@ -71,7 +72,7 @@ public class Client extends Application{
         launch(args);
     }
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage){
         window = primaryStage;
         window.setTitle("Decode");
 
@@ -349,7 +350,7 @@ public class Client extends Application{
         layout4.setPadding(new Insets(50,50,50,50));
         layout4.setAlignment(Pos.CENTER);
         layout4.getChildren().addAll(result, output, view);
-        outputScene = new Scene(layout4, 800, 600);
+        Scene outputScene = new Scene(layout4, 800, 600);
         window.setScene(outputScene);
     }
     /**************************************************************************
