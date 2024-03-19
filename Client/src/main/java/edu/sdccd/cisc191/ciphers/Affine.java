@@ -5,6 +5,9 @@ import edu.sdccd.cisc191.AlertBox;
 import java.util.StringTokenizer;
 
 public class Affine {
+    /**************************************************************************
+     * Encodes the text by shifting the letters
+     *************************************************************************/
     public static String encode(String inputText, String key) {
         //divides key into two inputs (m,b)
         StringTokenizer newKey = new StringTokenizer(key, ",");
@@ -25,6 +28,9 @@ public class Affine {
         return outputText.toString();
     }
 
+    /**************************************************************************
+     * Shifts the letter back from encoded message
+     *************************************************************************/
     public static String decode(String inputText, String key) {
         StringTokenizer newKey = new StringTokenizer(key, ",");
         int m = Integer.parseInt(newKey.nextToken());
@@ -46,6 +52,9 @@ public class Affine {
         return outputText.toString();
     }
 
+    /**************************************************************************
+     * Finds inverse number of the key in order to decode
+     *************************************************************************/
     private static int inverseKey(int key, int n) {
         int inverse = 1;
         key = key % n;
