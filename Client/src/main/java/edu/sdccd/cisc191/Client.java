@@ -164,7 +164,7 @@ public class Client extends Application{
         url.setOnAction(e -> {
             try {
                 String content = getUrl(link.getText());
-                textArea.appendText(content);
+                messageInput.appendText(content);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -528,7 +528,7 @@ public class Client extends Application{
         url.setOnAction(e -> {
             try {
                 String content = getUrl(link.getText());
-                textArea.appendText(content);
+                messageInput.appendText(content);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
