@@ -96,8 +96,9 @@ public class MD4Test {
                 return t << s | t >>> (32-s);
             }
         };
-        Range range = Range.create(1000000000);
+        Range range = Range.create(500000000);
         kernel.execute(range);
+        System.out.println(kernel.getExecutionTime());
         System.out.println(Arrays.toString(output));
         /*assertEquals("31d6cfe0d16ae931b73c59d7e0c089c0", MD4.hashAsString(""));
         assertEquals("bde52cb31de33e46245e05fbdbd6fb24", MD4.hashAsString("a"));
@@ -134,10 +135,10 @@ public class MD4Test {
         formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
         formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
 
-        String[] plainText = new String[]{"aaaaa", "aaaab"};
-        String[] inputHash = new String[]{"54485d61c2bf8519c3997d2c17d41b43", "f9a9047babfe177af45b3240d1051e4c"};
+        String[] plainText = new String[]{"aaaaaa11", "oliver99"};
+        String[] inputHash = new String[]{"21ca48e27724a623219b9c405572728d", "b2ea9c7889b7f32177ea274835c98bc4"};
 
-        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaa");
+        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaaa00");
         md4Engine.runMD4Crack();
 
         for(int i=0; i<inputHash.length; i++) {
