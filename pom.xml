@@ -38,6 +38,11 @@
             <version>${jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.aparapi</groupId>
+            <artifactId>aparapi</artifactId>
+            <version>3.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
