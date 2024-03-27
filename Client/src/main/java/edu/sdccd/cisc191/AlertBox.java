@@ -7,8 +7,16 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.geometry.*;
 
+/**
+ * AlertBox class
+ * Displays window for errors
+ */
 public class AlertBox {
-
+    /**
+     * displays error window
+     * @param title title of the window
+     * @param msg the error message
+     */
     public static void display(String title, String msg){
         Stage window = new Stage();
 

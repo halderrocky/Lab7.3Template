@@ -8,6 +8,10 @@ import com.aparapi.exception.QueryFailedException;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**************************************************************************
+ * Engine to bruteforce MD4 Hashes
+ * @author Oliver Tran
+ *************************************************************************/
 public class MD4Engine {
     private char[] format;
     private int[] formatLengths;
@@ -17,6 +21,13 @@ public class MD4Engine {
 
     private long numCombs = 1;
 
+    /**************************************************************************
+     * Constructor
+     * @param inputHashes List of hashes to crack
+     * @param inFormatMap Map keying the format to its alphabet
+     * @param inFormat The format of the passwords to check for
+     * @param numThreads The number of threads to allocate
+     *************************************************************************/
     public MD4Engine(String[] inputHashes, HashMap<Character, char[]> inFormatMap, String inFormat) {
         //TODO Throw exception if format length exceeds supported amount (16)
 
@@ -34,6 +45,9 @@ public class MD4Engine {
         setFormat(inFormatMap, inFormat);
     }
 
+    /**************************************************************************
+     * Main method to run the MD4 crack
+     *************************************************************************/
     public void runMD4Crack() {
         final char[] localFormat = format;
         final int[] localFormatLengths = formatLengths;
@@ -204,7 +218,10 @@ public class MD4Engine {
         }
     }
 
+    /**************************************************************************
+     * Getter to get map of hashes to cracked hash message
+     * @return The map pairing hashes to its plaintext
+     *************************************************************************/
     public HashMap<String, String> getCrackedPasswords() {
         return crackedPasswords;
     }
-}

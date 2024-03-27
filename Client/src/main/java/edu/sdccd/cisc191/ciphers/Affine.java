@@ -4,16 +4,26 @@ import edu.sdccd.cisc191.AlertBox;
 
 import java.util.StringTokenizer;
 
+/**************************************************************************
+ * Affine cipher encryption and decryption
+ * @author Vinh Tong
+ *************************************************************************/
 public class Affine {
+    /**************************************************************************
+     * Encrypts plain text using an Affine Cipher given a slope and an intercept
+     * @param inputText The plaintext to encrypt
+     * @param key The slope and intercept to encrypt with
+     * @return The encrypted ciphertext
+     *************************************************************************/
     public static String encode(String inputText, String key) {
-        //divides key into two inputs (m,b)
+        //Separates key into two inputs (m,b)
         StringTokenizer newKey = new StringTokenizer(key, ",");
         int m = Integer.parseInt(newKey.nextToken());
         int b = Integer.parseInt(newKey.nextToken());
         if (m % 2 == 0 || m % 13 == 0) {
             throw new IllegalArgumentException("The first number must not be even or a multiple of 13");
         }
-        //iterates through each character and shifts according to the key
+        //Iterates through each character and shifts according to the key
         StringBuilder outputText = new StringBuilder();
         for (int i = 0; i < inputText.length(); i++) {
             char c = inputText.charAt(i);
@@ -25,6 +35,12 @@ public class Affine {
         return outputText.toString();
     }
 
+    /**************************************************************************
+     * Decodes plain text using an Affine Cipher given the encryption slope and intercept
+     * @param inputText The ciphertext to decrypt
+     * @param key The slope and intercept the message was encrypted with
+     * @return The decrypted plaintext
+     *************************************************************************/
     public static String decode(String inputText, String key) {
         StringTokenizer newKey = new StringTokenizer(key, ",");
         int m = Integer.parseInt(newKey.nextToken());
@@ -46,6 +62,9 @@ public class Affine {
         return outputText.toString();
     }
 
+    /**************************************************************************
+     * Inverts the slope and intercept to get decryption key
+     *************************************************************************/
     private static int inverseKey(int key, int n) {
         int inverse = 1;
         key = key % n;

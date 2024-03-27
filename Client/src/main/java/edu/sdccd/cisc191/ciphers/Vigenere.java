@@ -4,11 +4,17 @@ import edu.sdccd.cisc191.CipherTools;
 
 import java.util.Arrays;
 
+/**************************************************************************
+ * Vigenere Cipher encryption, decryption and cryptanalysis
+ *************************************************************************/
 public class Vigenere extends CipherTools {
     private static final int DEPTH_OF_SEARCH = 20;  //Max Length of keyword to search for
 
     /**************************************************************************
      * Encrypts plain text using a Vigenere Cipher given a key word
+     * @param inputText Plaintext to encrypt
+     * @param key Key to encrypt the plaintext with
+     * @return The encrypted ciphertext
      *************************************************************************/
     public static String encode (String inputText, String key) {
         int[] keyArr = new int[key.length()];
@@ -23,7 +29,10 @@ public class Vigenere extends CipherTools {
     }
 
     /**************************************************************************
-     * Decodes cipher text using a Hill Cipher given the encryption key
+     * Decodes cipher text using a Vigenere Cipher given the encryption key
+     * @param inputText Ciphertext to decrypt
+     * @param key Key to decrypt the plaintext with
+     * @return The decrypted plaintext
      *************************************************************************/
     public static String decode (String inputText, String key) {
         if(key.isEmpty())
