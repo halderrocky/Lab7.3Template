@@ -42,6 +42,7 @@ public class MD4Engine {
         final byte[] localHash = hashBytes;
         final char[] localPlainText = new char[hashString.length*formatLengths.length];
         final long[] start = {0};
+        final boolean[] hashFound = new boolean[hashString.length];
 
         Kernel kernel = new Kernel() {
             final int[] ROUND2 = {0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15};
@@ -133,6 +134,7 @@ public class MD4Engine {
                     if(matchingHash) {
                         for(int j=0; j<wordLength[0]; j++) {
                             localPlainText[j+i*wordLength[0]] = currentPlain[j];
+                            hashFound[i] = true;
                         }
                     }
                 }
@@ -162,11 +164,20 @@ public class MD4Engine {
             maxLoad *= device.getMaxWorkItemSize()[i];
 
         kernel.execute(1);
-        for(long i=0; i<numCombs; i+=maxLoad) {
-            kernel.execute(Range.create(maxLoad, 256));
+        for(long i=numCombs; i>0; i-=maxLoad) {
+            kernel.execute(Range.create((int) Math.min(maxLoad,i), 256));
             kernel.dispose();
+
+            boolean allHashesFound = true;
+            for(boolean b: hashFound) {
+                if(!b)
+                    allHashesFound = false;
+            }
+            if(allHashesFound)
+                i = 0;
+
             start[0] += maxLoad;
-            System.out.println((numCombs - i)/maxLoad);
+            System.out.println(i/maxLoad);
         }
 
         for(int i=0; i<localPlainText.length/wordLength[0]; i++) {

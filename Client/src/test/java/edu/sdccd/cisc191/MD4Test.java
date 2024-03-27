@@ -135,10 +135,28 @@ public class MD4Test {
         formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
         formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
 
-        String[] plainText = new String[]{"aaaaaa11", "oliver99"};
-        String[] inputHash = new String[]{"21ca48e27724a623219b9c405572728d", "b2ea9c7889b7f32177ea274835c98bc4"};
+        String[] plainText = new String[]{"123456789", "999999999"};
+        String[] inputHash = new String[]{"2ae523785d0caf4d2fb557c12016185c", "3bab7f13543c89f46b296a0f0e36fdda"};
 
-        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaaaaa00");
+        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "000000000");
+        md4Engine.runMD4Crack();
+
+        for(int i=0; i<inputHash.length; i++) {
+            assertEquals(plainText[i], md4Engine.getCrackedPasswords().get(inputHash[i]));
+        }
+    }
+
+    @Test
+    public void sandiPasswordBreak() {
+        HashMap<Character, char[]> formatMap = new HashMap<>();
+        formatMap.put('a', new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'});
+        formatMap.put('A', new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'});
+        formatMap.put('0', new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'});
+
+        String[] plainText = new String[]{"zzz999zZz", "dec355vUs"};
+        String[] inputHash = new String[]{"ae416c4ac141ade5b5ddd983b1d7c981", "c3b97445436822a27eacd515d408d532"};
+
+        MD4Engine md4Engine = new MD4Engine(inputHash, formatMap, "aaa000aAa");
         md4Engine.runMD4Crack();
 
         for(int i=0; i<inputHash.length; i++) {
