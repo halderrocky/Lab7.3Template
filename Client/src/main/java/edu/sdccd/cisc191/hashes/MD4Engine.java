@@ -26,7 +26,6 @@ public class MD4Engine {
      * @param inputHashes List of hashes to crack
      * @param inFormatMap Map keying the format to its alphabet
      * @param inFormat The format of the passwords to check for
-     * @param numThreads The number of threads to allocate
      *************************************************************************/
     public MD4Engine(String[] inputHashes, HashMap<Character, char[]> inFormatMap, String inFormat) {
         //TODO Throw exception if format length exceeds supported amount (16)
@@ -199,7 +198,7 @@ public class MD4Engine {
         }
     }
 
-    public void setFormat(HashMap<Character, char[]> inFormatMap, String inFormat) {
+    private void setFormat(HashMap<Character, char[]> inFormatMap, String inFormat) {
         for(int i=0, iteration=0; i<inFormat.length(); i++) {
             char[] row = inFormatMap.get(inFormat.charAt(i));
             for(int j=0; j<row.length; j++, iteration++)
@@ -207,7 +206,7 @@ public class MD4Engine {
         }
     }
 
-    public void hexToBytes(String[] hashList) {
+    private void hexToBytes(String[] hashList) {
         int len = hashList[0].length();
         hashBytes = new byte[(len/2)*hashList.length];
         for(int i=0; i<hashList.length; i++) {
@@ -225,3 +224,4 @@ public class MD4Engine {
     public HashMap<String, String> getCrackedPasswords() {
         return crackedPasswords;
     }
+}
