@@ -7,8 +7,8 @@ import java.util.Date;
 
 public class WeatherServer {
 
-    private static WeatherLocation[] cities = new WeatherLocation[2]; // One-dimensional array of cities
-    private static WeatherReport[][] weatherReports = new WeatherReport[2][2]; // Two-dimensional array of weather reports
+    private static WeatherLocation[] cities = new WeatherLocation[3]; // One-dimensional array of cities
+    private static WeatherReport[][] weatherReports = new WeatherReport[3][3]; // Two-dimensional array of weather reports
 
     public static void main(String[] args) {
         populateWeatherLocations();
@@ -45,17 +45,29 @@ public class WeatherServer {
         }
     }
 
+    /** This method
+     * Populating an array of cities with WeatherLocation objects
+     * Each city is paired with a basic description of the weather
+     */
     private static void populateWeatherLocations() {
         cities[0] = new WeatherLocation("San Diego", "Sunny");
         cities[1] = new WeatherLocation("New York", "Rainy");
+        cities[2] = new WeatherLocation("San Francisco", " Snowy");
     }
 
+    /** This method
+     * Populates a 2D array with detailed weather reports
+     * Each WeatherReport contains a date object
+     */
     private static void loadWeatherReports() {
         weatherReports[0][0] = new WeatherReport(new Date(), "75F, clear skies, no precipitation");
         weatherReports[0][1] = new WeatherReport(new Date(), "70F, light breeze, no precipitation");
 
         weatherReports[1][0] = new WeatherReport(new Date(), "60F, overcast, moderate rain");
         weatherReports[1][1] = new WeatherReport(new Date(), "58F, windy, heavy rain");
+
+        weatherReports[2][0] = new WeatherReport(new Date(), "20F, Snowy, Cold");
+        weatherReports[2][1] = new WeatherReport(new Date(), "21F, Breezy,  Rainy");
     }
 }
 

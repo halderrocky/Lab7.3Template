@@ -48,6 +48,7 @@ public class WeatherClientGUI extends Application {
         grid.add(getWeatherButton, 1, 1);
         grid.add(resultLabel, 1, 2);
 
+
         Scene scene = new Scene(grid, 400, 300);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Weather Forecast Client");

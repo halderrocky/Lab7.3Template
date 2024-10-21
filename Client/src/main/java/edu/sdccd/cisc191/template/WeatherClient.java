@@ -26,7 +26,7 @@ public class WeatherClient {
             Scanner scanner = new Scanner(System.in);
 
             // Ask user to enter a city name
-            System.out.println("Enter the name of the city (San Diego or New York): ");
+            System.out.println("Enter the name of the city (San Diego or New York or San Francisco): ");
             String city = scanner.nextLine();
 
             // Send the city name to the server
