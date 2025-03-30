@@ -12,6 +12,7 @@ package edu.sdccd.cisc191.template;
 public class Fighter extends Unit
 {
     private int fuel;
+    //if fuel should not be modified outside class keep private otherwise add a setter meathod instead of making it directly acessible.
 
     //Constructor to Initialize the private objects in infantryUnit and Unit class.
     public Fighter(String unitName, String unitType, String specialization, int price, int armor,
@@ -37,6 +38,12 @@ public class Fighter extends Unit
             {
                 return super.toString() + "fuel= " + fuel;
             }
+
+            //@Override
+    //public String toString() {
+    //    return String.format("%s fuel=%d", super.toString(), fuel);
+    //
+     // change to this improves redabilty and maintinability
 
 
 }

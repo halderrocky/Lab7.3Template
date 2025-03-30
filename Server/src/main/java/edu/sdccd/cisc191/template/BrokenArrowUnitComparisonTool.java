@@ -19,7 +19,8 @@ import java.util.List;
  * Java GUI Tutorial - Make a GUI in 13 Minutes #99 "https://www.youtube.com/watch?v=5o3fMLPY7qY
  * "How to Use BoxLayout"  https://docs.oracle.com/javase/tutorial/uiswing/layout/box.html
  */
-//test
+//this class represents a gui application for comparing unit statistis and it loads unit data from a csv file andd sisplays details side by side
+
 public class BrokenArrowUnitComparisonTool extends Application
 {
 
@@ -34,13 +35,15 @@ public class BrokenArrowUnitComparisonTool extends Application
     // List of units loaded from CSV
     private List<Unit> unitList;
 
+    //stars the java fx applicationd nd initilizes the ui compoennts
     @Override
     public void start(Stage primaryStage)
     {
         // Load units from CSV (ensure the path is correct)
         unitList = UnitStatsLoader.loadUnits("C:\\Users\\Nicko\\IdeaProjects\\CISC191-FinalProjectTemplate\\Server\\src\\main\\resources\\Broken Arrow Unit Stats.csv");
         System.out.println("Units loaded: " + unitList.size());
-
+//change to logger.info
+        //because you can use differen tloggin leveles like INFO , WARNING, or ERROR
         // Create ComboBoxes and populate them with units
         leftComboBox = new ComboBox<>();
         rightComboBox = new ComboBox<>();

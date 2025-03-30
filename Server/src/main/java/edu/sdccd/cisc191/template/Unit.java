@@ -6,20 +6,23 @@ package edu.sdccd.cisc191.template;
  *
  * References: "Bro code: Java: Inheritance" https://www.youtube.com/watch?v=Zs342ePFvRI
  */
-
-public class Unit
+//inherited by 3 other classes
+public abstract class Unit
 {
-    private String unitName;
-    private String unitType;
-    private String specialization;
-    private int price;
-    private int armor;
-    private int health;
-    private int sightRange;
-    private double unseenRange;
-    private int speed;
-    private int weight;
-    private String abilities;
+    //All set to not final but they all had setters and never used anywhere in the code
+    //prevent errors
+    //final makes it so it dosent change anywhere else in the code
+    private final String unitName;
+    private final String unitType;
+    private final  String specialization;
+    private final int price;
+    private final int armor;
+    private final int health;
+    private final int sightRange;
+    private final double unseenRange;
+    private final int speed;
+    private final int weight;
+    private final String abilities;
 
 
     //  Constructor to Initialize the private objects in the Unit class.

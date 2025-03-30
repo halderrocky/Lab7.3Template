@@ -6,6 +6,8 @@ package edu.sdccd.cisc191.template;
  *
  * References: "Bro code: Java: Inheritance" https://www.youtube.com/watch?v=Zs342ePFvRI
  */
+//the RearArmor variable should follow java naming conventions instead of that it should be rearArmor
+    // more java doc to explain the purposes to make it more understnable
 
 // Tank class inherits the methods of Unit Class.
 public class Tank extends Unit
