@@ -13,7 +13,7 @@ package edu.sdccd.cisc191.template;
 public class Tank extends Unit
 {
     private int RearArmor;
-
+//this
     //Constructor to Initialize the private objects in tank and Unit class.
     public Tank(String unitName, String unitType, String specialization, int price, int armor,
                 int health, int sightRange, double unseenRange, int speed,
