@@ -32,6 +32,11 @@ public class Client {
         return CustomerResponse.fromJSON(in.readLine());
     }
 
+    public VehicleResponse sendRequest(VehicleRequest vehicleRequest) throws Exception {
+        out.println(VehicleRequest.toJSON(vehicleRequest));
+        return VehicleResponse.fromJSON(in.readLine());
+    }
+
     public void stopConnection() throws IOException {
         in.close();
         out.close();
@@ -42,6 +47,11 @@ public class Client {
         try {
             client.startConnection("127.0.0.1", 4444);
             System.out.println(client.sendRequest().toString());
+
+            VehicleRequest vehicleRequest = new VehicleRequest();
+            VehicleResponse vehicleResponse = client.sendRequest(vehicleRequest);
+            System.out.println(vehicleResponse.toString());
+
             client.stopConnection();
         } catch(Exception e) {
             e.printStackTrace();
